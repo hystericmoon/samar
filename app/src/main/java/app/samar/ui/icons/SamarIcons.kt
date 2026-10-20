@@ -21,6 +21,8 @@ object SamarIcons {
         )
     }
 
+    val Info: ImageVector by lazy { lineIcon("Info", "M12,3a9,9 0,1 0,0.01 0z", "M12,11v6", "M12,7.5v0.5") }
+
     val Moon: ImageVector by lazy {
         lineIcon("Moon", "M12,3a6,6 0,0 0,9 9a9,9 0,1 1,-9 -9z")
     }

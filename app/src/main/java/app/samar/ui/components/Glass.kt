@@ -3,6 +3,8 @@ package app.samar.ui.components
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.runtime.Composable
@@ -43,7 +45,7 @@ enum class GlassTone { Accent, Clear, Dark, Frost, Highlight }
 /** Content colour that keeps text and icons at 4.5:1 on each tone. */
 @Composable
 fun glassContentColor(tone: GlassTone): Color = when (tone) {
-    GlassTone.Accent -> Samar.colors.textOnAccent
+    GlassTone.Accent -> Color.White
     GlassTone.Clear -> Samar.colors.text
     GlassTone.Dark -> Color.White
     GlassTone.Frost -> Color(0xFF15141C)
@@ -77,8 +79,8 @@ fun Modifier.liquidGlass(
     )
 
     val body = when (tone) {
-        GlassTone.Accent -> c.accent.copy(alpha = 0.90f)
-        GlassTone.Clear -> if (dark) Color.White.copy(alpha = 0.10f) else Color.White.copy(alpha = 0.62f)
+        GlassTone.Accent -> Color.Transparent // drawn as a cornflower-to-navy gradient below
+        GlassTone.Clear -> if (dark) Color.White.copy(alpha = 0.06f) else Color.White.copy(alpha = 0.72f)
         GlassTone.Dark -> Color(0xFF15141C).copy(alpha = 0.58f)
         GlassTone.Frost -> Color.White.copy(alpha = 0.80f)
         GlassTone.Highlight -> Overlay.Highlight.copy(alpha = 0.95f)
@@ -125,8 +127,11 @@ fun Modifier.liquidGlass(
                 0.8f to Color.White.copy(alpha = 0.05f),
                 1f to Color.White.copy(alpha = 0.45f),
             )
+            val accentBody = Brush.verticalGradient(
+                listOf(Color(0xFF5882E8).copy(alpha = 0.97f), Color(0xFF1F06AC).copy(alpha = 0.97f)),
+            )
             onDrawBehind {
-                drawPath(path, body)
+                if (tone == GlassTone.Accent) drawPath(path, accentBody) else drawPath(path, body)
                 drawPath(path, bodyBrush)
                 if (press > 0f) drawPath(path, Color.White.copy(alpha = 0.12f * press))
                 // Rim: a double-width stroke clipped to the inside leaves a crisp inner edge.
@@ -164,3 +169,31 @@ private fun Modifier.glassShadow(shape: Shape, elevation: Dp, color: Color): Mod
 }
 
 private fun Color.luminance(): Float = 0.2126f * red + 0.7152f * green + 0.0722f * blue
+
+/** Thin edge for glass cards: lighter than [liquidGlass]'s outline, for panels rather than controls. */
+@Composable
+fun glassHairline(): Color =
+    if (Samar.colors.isDark) Color(0x2EA0AFFF) else Color(0x1F1F06AC)
+
+/** A glass panel (cards, the editor sheet): frosted body, soft rim and a hairline edge. */
+@Composable
+fun Modifier.glassCard(shape: Shape, elevation: Dp = 0.dp): Modifier =
+    this
+        .liquidGlass(shape, GlassTone.Clear, elevation = elevation)
+        .border(1.dp, glassHairline(), shape)
+
+/** Bottom sheet in the glass look: translucent, a light top edge, rounded top corners. */
+@Composable
+fun Modifier.glassSheet(): Modifier {
+    val c = Samar.colors
+    val shape = app.samar.ui.theme.SamarShapes.sheet
+    val fill = if (c.isDark) {
+        Brush.verticalGradient(listOf(Color(0xBF1E246E), Color(0xEB0C0E34)))
+    } else {
+        Brush.verticalGradient(listOf(Color(0xE0FFFFFF), Color(0xF5F4F6FD)))
+    }
+    return this
+        .clip(shape)
+        .background(fill)
+        .border(1.dp, if (c.isDark) Color(0x40A0B9FF) else Color(0xE6FFFFFF), shape)
+}

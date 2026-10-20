@@ -38,6 +38,8 @@ private const val MIN_DRAFT = 16f
 class EditorViewModel(app: Application) : AndroidViewModel(app) {
 
     var uri: Uri? by mutableStateOf(null); private set
+    /** The photo's file name, shown above the editor title. */
+    var fileName: String? by mutableStateOf(null); private set
     var loading by mutableStateOf(false); private set
     var failed by mutableStateOf(false); private set
 
@@ -224,6 +226,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         loading = true
         loadJob = viewModelScope.launch {
             try {
+                fileName = withContext(Dispatchers.IO) { displayName(newUri) }
                 val bitmap = PhotoLoader.load(getApplication(), newUri)
                 base = bitmap
                 if (restore != null) {
@@ -247,6 +250,12 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun close() = reset()
+
+    private fun displayName(u: Uri): String? = runCatching {
+        getApplication<Application>().contentResolver
+            .query(u, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)
+            ?.use { if (it.moveToFirst()) it.getString(0) else null }
+    }.getOrNull()
 
     fun toggleFace(id: Int) {
         remember()
@@ -324,7 +333,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun reset() {
         loadJob?.cancel(); renderJob?.cancel()
-        uri = null; loading = false; failed = false; fromRecent = false
+        uri = null; fileName = null; loading = false; failed = false; fromRecent = false
         base = null; rendered = null; faces = emptyList()
         effect = Effect.Gaussian; intensity = 0.7f; showOriginal = false; hideOverlays = false
         viewZoom = 1f; viewCenter = null

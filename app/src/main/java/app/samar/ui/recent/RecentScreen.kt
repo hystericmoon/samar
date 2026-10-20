@@ -1,5 +1,6 @@
 package app.samar.ui.recent
 
+import app.samar.ui.theme.samarBackdrop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -73,7 +74,7 @@ fun RecentScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(c.background)
+            .samarBackdrop()
             .windowInsetsPadding(WindowInsets.statusBars)
             .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
@@ -156,7 +157,7 @@ fun RecentScreen(
                     Text("Cancel", style = Samar.type.buttonSmall, color = c.text)
                 }
             },
-            containerColor = c.surface,
+            containerColor = if (c.isDark) androidx.compose.ui.graphics.Color(0xFF151A4E) else androidx.compose.ui.graphics.Color.White,
             titleContentColor = c.text,
             textContentColor = c.mutedText,
         )

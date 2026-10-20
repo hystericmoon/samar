@@ -81,6 +81,12 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import app.samar.ui.icons.SamarIcons
 import app.samar.ui.theme.Overlay
+import app.samar.ui.theme.samarBackdrop
+import app.samar.ui.components.glassCard
+import app.samar.ui.components.glassSheet
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import app.samar.ui.theme.Samar
 import app.samar.ui.theme.SamarShapes
 
@@ -92,9 +98,9 @@ fun EditorScreen(vm: EditorViewModel, onBack: () -> Unit) {
     val density = LocalDensity.current
     var sheetHeight by remember { mutableStateOf(0.dp) }
 
-    Box(Modifier.fillMaxSize().background(c.background)) {
+    Box(Modifier.fillMaxSize().samarBackdrop()) {
         Column(Modifier.fillMaxSize()) {
-            EditorTopBar(canUndo = vm.canUndo, onBack = onBack, onUndo = vm::undo)
+            EditorTopBar(fileName = vm.fileName, canUndo = vm.canUndo, onBack = onBack, onUndo = vm::undo)
 
             // Photo area runs under the sheet's rounded top corners.
             Box(
@@ -164,7 +170,7 @@ fun EditorScreen(vm: EditorViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-private fun EditorTopBar(canUndo: Boolean, onBack: () -> Unit, onUndo: () -> Unit) {
+private fun EditorTopBar(fileName: String?, canUndo: Boolean, onBack: () -> Unit, onUndo: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -174,13 +180,29 @@ private fun EditorTopBar(canUndo: Boolean, onBack: () -> Unit, onUndo: () -> Uni
         verticalAlignment = Alignment.CenterVertically,
     ) {
         GlassIconButton(SamarIcons.Back, "Back", onClick = onBack)
-        Text(
-            "Edit photo",
-            style = Samar.type.screenTitle,
-            color = Samar.colors.text,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f).semantics { heading() },
-        )
+        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            // Title in a glass pill, with the file name above it.
+            Column(
+                Modifier
+                    .glassCard(SamarShapes.pill)
+                    .padding(horizontal = 18.dp, vertical = if (fileName != null) 5.dp else 9.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (fileName != null) {
+                    Text(
+                        fileName, style = Samar.type.label.copy(fontSize = 11.sp, lineHeight = 13.sp),
+                        color = Samar.colors.mutedText, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = 180.dp),
+                    )
+                }
+                Text(
+                    "Edit photo",
+                    style = Samar.type.bodyStrong,
+                    color = Samar.colors.text,
+                    modifier = Modifier.semantics { heading() },
+                )
+            }
+        }
         GlassIconButton(SamarIcons.Undo, "Undo", enabled = canUndo, onClick = onUndo)
     }
 }
@@ -353,8 +375,7 @@ private fun EditorSheet(
     Column(
         modifier
             .fillMaxWidth()
-            .clip(SamarShapes.sheet)
-            .background(c.surface)
+            .glassSheet()
             .windowInsetsPadding(WindowInsets.navigationBars)
             .padding(top = 20.dp, bottom = 24.dp),
     ) {
@@ -370,7 +391,7 @@ private fun EditorSheet(
                         contentDescription = spoken
                     },
             ) {
-                Text(shown, style = Samar.type.buttonSmall, color = c.text)
+                Text(shown, style = Samar.type.sectionHeading, color = c.text)
                 if (detail.isNotEmpty()) {
                     Text(detail, style = Samar.type.label, color = c.mutedText)
                 }

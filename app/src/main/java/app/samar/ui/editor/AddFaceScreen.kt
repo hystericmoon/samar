@@ -1,5 +1,7 @@
 package app.samar.ui.editor
 
+import app.samar.ui.components.glassSheet
+import app.samar.ui.theme.samarBackdrop
 import android.graphics.RectF
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -90,7 +92,7 @@ fun AddFaceScreen(vm: EditorViewModel) {
     val draft = vm.draft ?: return
     var sheetHeight by remember { mutableStateOf(0.dp) }
 
-    Box(Modifier.fillMaxSize().background(c.background)) {
+    Box(Modifier.fillMaxSize().samarBackdrop()) {
         Column(Modifier.fillMaxSize()) {
             Row(
                 Modifier
@@ -137,8 +139,7 @@ fun AddFaceScreen(vm: EditorViewModel) {
                 .align(Alignment.BottomCenter)
                 .onSizeChanged { sheetHeight = with(density) { it.height.toDp() } }
                 .fillMaxWidth()
-                .clip(SamarShapes.sheet)
-                .background(c.surface)
+                .glassSheet()
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .padding(start = 24.dp, end = 24.dp, top = 28.dp, bottom = 24.dp),
         ) {

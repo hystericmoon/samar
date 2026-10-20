@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -48,7 +50,7 @@ fun IntensitySlider(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("Intensity", style = Samar.type.buttonSmall, color = c.text, modifier = Modifier.weight(1f))
-            Text(if (enabled) "$percent%" else disabledNote, style = Samar.type.buttonSmall, color = c.text)
+            Text(if (enabled) "$percent%" else disabledNote, style = Samar.type.buttonSmall, color = if (enabled) c.emphasis else c.mutedText)
         }
         Slider(
             value = value,
@@ -80,11 +82,11 @@ fun IntensitySlider(
                 Canvas(Modifier.fillMaxWidth().height(8.dp)) {
                     val h = size.height
                     val r = CornerRadius(h / 2)
-                    drawRoundRect(c.divider, size = size, cornerRadius = r)
+                    drawRoundRect(c.text.copy(alpha = 0.12f), size = size, cornerRadius = r)
                     drawRoundRect(c.outline, size = size, cornerRadius = r, style = Stroke(1.dp.toPx()))
                     drawRoundRect(
-                        c.accent, topLeft = Offset.Zero,
-                        size = Size(size.width * fraction, h), cornerRadius = r,
+                        Brush.horizontalGradient(listOf(Color(0xFF0F42C0), Color(0xFF5882E8)), endX = size.width * fraction),
+                        topLeft = Offset.Zero, size = Size(size.width * fraction, h), cornerRadius = r,
                     )
                 }
             },

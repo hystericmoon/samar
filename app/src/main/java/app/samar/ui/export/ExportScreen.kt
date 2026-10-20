@@ -1,5 +1,13 @@
 package app.samar.ui.export
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.border
+import app.samar.ui.components.glassHairline
+import app.samar.ui.components.glassCard
+import app.samar.ui.theme.samarBackdrop
 import android.Manifest
 import android.content.ClipData
 import android.content.Intent
@@ -100,7 +108,7 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
-            .background(c.background)
+            .samarBackdrop()
             .windowInsetsPadding(WindowInsets.statusBars)
             .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
@@ -109,7 +117,6 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             GlassIconButton(SamarIcons.Back, "Back", onClick = vm::closeExport)
-            Spacer(Modifier.size(width = 16.dp, height = 48.dp))
             Text(
                 "Export",
                 style = Samar.type.screenTitle,
@@ -117,23 +124,34 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f).semantics { heading() },
             )
-            // Same width as the back button so the title stays centred.
+            // Done in a glass pill (48dp tall target).
             Box(
                 Modifier
-                    .size(width = 64.dp, height = 48.dp)
-                    .clip(SamarShapes.pill)
+                    .heightIn(min = 48.dp)
                     .clickable(role = Role.Button, onClickLabel = "Go to Home") { done() },
                 contentAlignment = Alignment.Center,
             ) {
-                Text("Done", style = Samar.type.buttonSmall, color = c.accent)
+                Text(
+                    "Done",
+                    style = Samar.type.buttonSmall,
+                    color = c.accent,
+                    modifier = Modifier.glassCard(SamarShapes.pill).padding(horizontal = 16.dp, vertical = 10.dp),
+                )
             }
         }
 
-        Column(Modifier.weight(1f).padding(horizontal = 24.dp)) {
+        Column(Modifier.weight(1f).padding(horizontal = 20.dp)) {
+            SegmentedControl(
+                options = Compare.entries,
+                selected = compare,
+                label = { it.name },
+                onSelect = { compare = it },
+                height = 48.dp,
+            )
             val before = vm.base
             val after = vm.rendered ?: before
             val shown = if (compare == Compare.Before) before else after
-            Box(Modifier.weight(1f).fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
+            Box(Modifier.weight(1f).fillMaxWidth().padding(vertical = 12.dp), contentAlignment = Alignment.Center) {
                 if (shown != null) {
                     Image(
                         bitmap = shown.asImageBitmap(),
@@ -141,64 +159,72 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .aspectRatio(shown.width / shown.height.toFloat())
-                            .clip(RoundedCornerShape(24.dp)),
+                            .clip(RoundedCornerShape(24.dp))
+                            .border(1.dp, glassHairline(), RoundedCornerShape(24.dp)),
                     )
                 }
             }
-            Spacer(Modifier.height(12.dp))
-            SegmentedControl(
-                options = Compare.entries,
-                selected = compare,
-                label = { it.name },
-                onSelect = { compare = it },
-                trackColor = c.surface,
-            )
-            Spacer(Modifier.height(8.dp))
-            SettingSwitch(
-                title = "Remove location and camera info",
-                description = "GPS and EXIF data are stripped from the saved copy.",
-                checked = options.removeMetadata,
-                onChange = { vm.exportOptions = options.copy(removeMetadata = it) },
-            )
-            HorizontalDivider(color = c.divider)
-            SettingSwitch(
-                title = "Keep original resolution",
-                description = "Turn off to save a smaller file.",
-                checked = options.keepOriginalResolution,
-                onChange = { vm.exportOptions = options.copy(keepOriginalResolution = it) },
-            )
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .glassCard(RoundedCornerShape(22.dp))
+                    .padding(horizontal = 16.dp, vertical = 2.dp),
+            ) {
+                SettingSwitch(
+                    title = "Remove location and camera info",
+                    description = "GPS and EXIF data are stripped from the saved copy.",
+                    checked = options.removeMetadata,
+                    onChange = { vm.exportOptions = options.copy(removeMetadata = it) },
+                )
+                HorizontalDivider(color = glassHairline())
+                SettingSwitch(
+                    title = "Keep original resolution",
+                    description = "Turn off to save a smaller file.",
+                    checked = options.keepOriginalResolution,
+                    onChange = { vm.exportOptions = options.copy(keepOriginalResolution = it) },
+                )
+            }
         }
 
-        Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 16.dp)) {
-            PillButton(
-                text = when (status) {
-                    ExportStatus.Saving -> "Saving…"
-                    ExportStatus.Saved -> "Saved"
-                    else -> "Save to gallery"
-                },
-                icon = if (status == ExportStatus.Saved) SamarIcons.Check else SamarIcons.Download,
-                onClick = { if (!status.isWorking) save() },
-            )
-            Spacer(Modifier.height(12.dp))
+        // Bottom dock: what will be saved, then Save and Share.
+        val hidden = vm.blurredCount
+        Column(
+            Modifier
+                .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)
+                .fillMaxWidth()
+                .glassCard(RoundedCornerShape(26.dp), elevation = 6.dp)
+                .padding(start = 18.dp, end = 12.dp, top = 14.dp, bottom = 14.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f).semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite }) {
+                    Text(
+                        if (hidden == 1) "1 face hidden" else "$hidden faces hidden",
+                        style = Samar.type.screenTitle.copy(fontSize = 21.sp),
+                        color = c.emphasis,
+                    )
+                    val detail = when (status) {
+                        ExportStatus.Saved -> "Saved to Pictures/${Exporter.ALBUM}."
+                        ExportStatus.Failed -> "Couldn't export this photo. Try again."
+                        else -> "${vm.effect.label} · JPEG" + if (options.removeMetadata) " · no location" else ""
+                    }
+                    Text(detail, style = Samar.type.label, color = c.mutedText)
+                }
+                PillButton(
+                    text = when (status) {
+                        ExportStatus.Saving -> "Saving…"
+                        ExportStatus.Saved -> "Saved"
+                        else -> "Save"
+                    },
+                    icon = if (status == ExportStatus.Saved) SamarIcons.Check else SamarIcons.Download,
+                    onClick = { if (!status.isWorking) save() },
+                    modifier = Modifier.width(150.dp),
+                )
+            }
+            Spacer(Modifier.height(10.dp))
             OutlinedPillButton(
                 text = if (status == ExportStatus.PreparingShare) "Preparing…" else "Share",
                 icon = SamarIcons.Share,
                 onClick = { if (!status.isWorking) share() },
-            )
-            val message = when (status) {
-                ExportStatus.Saved -> "Saved to Pictures/${Exporter.ALBUM}."
-                ExportStatus.Failed -> "Couldn't export this photo. Try again."
-                else -> ""
-            }
-            Text(
-                message,
-                style = Samar.type.bodySmall,
-                color = c.mutedText,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .semantics { liveRegion = LiveRegionMode.Polite },
             )
         }
     }
@@ -218,7 +244,7 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
                     Text("Keep editing", style = Samar.type.buttonSmall, color = c.text)
                 }
             },
-            containerColor = c.surface,
+            containerColor = if (c.isDark) Color(0xFF151A4E) else Color.White,
             titleContentColor = c.text,
             textContentColor = c.mutedText,
         )

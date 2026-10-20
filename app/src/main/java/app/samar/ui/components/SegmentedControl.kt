@@ -48,7 +48,7 @@ fun <T> SegmentedControl(
         modifier
             .fillMaxWidth()
             .height(height)
-            .liquidGlass(SamarShapes.pill, GlassTone.Clear, outline = true)
+            .glassCard(SamarShapes.pill)
             .padding(4.dp),
     ) {
         val slot = maxWidth / options.size
@@ -79,7 +79,7 @@ fun <T> SegmentedControl(
                     Text(
                         label(option),
                         style = Samar.type.buttonSmall,
-                        color = if (isSelected) c.textOnAccent else c.text,
+                        color = if (isSelected) glassContentColor(GlassTone.Accent) else c.mutedText,
                     )
                 }
             }

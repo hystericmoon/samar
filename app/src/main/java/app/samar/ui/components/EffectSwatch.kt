@@ -29,6 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -92,7 +94,8 @@ fun EffectRow(
 
 /**
  * 56dp clay-person circle in a 72dp slot, with a glass sheen like a marble.
- * Selected = 3dp gap + 3dp accent ring and accent label; on selection it pops up slightly
+ * 56dp rounded-square clay-person tile in a 72dp slot, with a glass sheen.
+ * Selected = 3dp gap + 3dp ring with a soft glow, in the emphasis colour (Neon in dark, Navy in light); on selection it pops up slightly
  * and the person glances left and right once with a small head tilt. Still when "Remove animations" is on.
  */
 @Composable
@@ -143,8 +146,8 @@ fun EffectSwatch(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(Modifier.size(72.dp), contentAlignment = Alignment.Center) {
-            val accent = c.accent
-            val outline = c.outline
+            val accent = c.emphasis
+            val outline = glassHairline()
             Canvas(
                 Modifier
                     .size(68.dp)
@@ -152,29 +155,40 @@ fun EffectSwatch(
             ) {
                 val center = Offset(size.width / 2, size.height / 2)
                 val r = (SwatchSize / 2).toPx()
+                // Rounded square ("squircle-ish"), 18dp corners on the 56dp tile.
+                val corner = 18.dp.toPx()
                 if (ring > 0f) {
-                    // 3dp gap is just empty space; the ring sits outside it.
-                    drawCircle(
-                        accent.copy(alpha = ring), radius = r + 4.5.dp.toPx(), center = center,
+                    // 3dp gap is just empty space; the ring sits outside it, with a soft glow.
+                    val g = 4.5.dp.toPx()
+                    drawRoundRect(
+                        accent.copy(alpha = 0.25f * ring), topLeft = Offset(center.x - r - g - 3.dp.toPx(), center.y - r - g - 3.dp.toPx()),
+                        size = Size((r + g + 3.dp.toPx()) * 2, (r + g + 3.dp.toPx()) * 2), cornerRadius = CornerRadius(corner + g + 3.dp.toPx()),
+                        style = Stroke(4.dp.toPx()),
+                    )
+                    drawRoundRect(
+                        accent.copy(alpha = ring), topLeft = Offset(center.x - r - g, center.y - r - g),
+                        size = Size((r + g) * 2, (r + g) * 2), cornerRadius = CornerRadius(corner + g),
                         style = Stroke(3.dp.toPx() * (0.6f + 0.4f * ring)),
                     )
                 }
-                val circle = Path().apply { addOval(Rect(center, r)) }
+                val circle = Path().apply { addRoundRect(RoundRect(Rect(center, r), CornerRadius(corner))) }
                 clipPath(circle) {
                     translate(left = center.x - r, top = center.y - r) {
                         drawSwatchPerson(r * 2, turn.value, face)
                     }
                     drawMarbleSheen(center, r)
                 }
-                if (!selected) {
-                    drawCircle(outline, radius = r, center = center, style = Stroke(1.5.dp.toPx()))
-                }
+                drawRoundRect(
+                    if (selected) Color.White.copy(alpha = 0.35f) else outline,
+                    topLeft = Offset(center.x - r, center.y - r), size = Size(r * 2, r * 2),
+                    cornerRadius = CornerRadius(corner), style = Stroke(1.dp.toPx()),
+                )
             }
         }
         Text(
             effect.label,
             style = Samar.type.label,
-            color = if (selected) c.accent else c.text,
+            color = if (selected) c.emphasis else c.mutedText,
             maxLines = 1,
         )
         Spacer(Modifier.height(4.dp))
@@ -228,9 +242,5 @@ private fun DrawScope.drawMarbleSheen(center: Offset, r: Float) {
         ),
         topLeft = Offset(center.x - r * 0.62f, center.y - r * 0.92f),
         size = Size(r * 1.24f, r * 0.78f),
-    )
-    drawCircle(
-        Color.White.copy(alpha = 0.55f), radius = r - 0.75.dp.toPx(), center = center,
-        style = Stroke(1.dp.toPx()),
     )
 }

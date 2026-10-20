@@ -144,6 +144,16 @@ Photo placeholder colors used in the design (for previews and empty states only)
 
 Sizes used: wordmark 26, hero headline 34, screen titles 19, section headings 18, body 14 to 15, labels 13, buttons 16 to 17.
 
+## Glass look (2026-10-20, from design/glass-concept*.png)
+
+- Backgrounds: a vertical fade with a soft cornflower glow at the top-left (`samarBackdrop`). Dark: #0E1240 → #090B2A. Light: #F4F6FD → #E9EDF9.
+- Panels (`glassCard`): frosted glass (white 6% in dark, 72% in light), soft top rim, 1dp hairline edge. Sheets (`glassSheet`) are translucent navy (dark) / milky white (light).
+- Main buttons: cornflower → navy gradient glass, white text, soft glow.
+- `emphasis` colour for numbers and the selected swatch: Neon #E3EF4F in dark, Navy #1F06AC in light.
+- Home: logo chip (white mark on a navy disc + "samar") on the left; round glass Theme (sun/moon) and About (ⓘ) buttons on the right. Hero animation 150dp, headline left-aligned, Auto / Manual pills, a "Start with" card that follows the mode, Choose photo, then Recent: the latest save as a neon card ("3 faces hidden"), then up to three thumbnails.
+- Editor: title in a glass pill with the file name above it; effect swatches are 56dp rounded squares (18dp corners) with a glowing ring.
+- Export: Before / After at the top, settings in a glass card, and a bottom dock with "N faces hidden", Save and Share.
+
 ## Shape
 
 - Pill buttons (fully rounded).

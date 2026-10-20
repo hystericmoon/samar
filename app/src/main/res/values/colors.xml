@@ -4,5 +4,5 @@
     <color name="icon_background">#1F06AC</color>
     <color name="icon_mark">#FFFFFF</color>
     <!-- Window background before Compose draws (avoids a flash) -->
-    <color name="window_background">#F2F2F6</color>
+    <color name="window_background">#E9EDF9</color>
 </resources>

@@ -1,5 +1,6 @@
 package app.samar.ui.notices
 
+import app.samar.ui.theme.samarBackdrop
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -185,7 +186,7 @@ private fun NoticeScaffold(title: String, onBack: () -> Unit, content: LazyListS
     Column(
         Modifier
             .fillMaxSize()
-            .background(c.background)
+            .samarBackdrop()
             .windowInsetsPadding(WindowInsets.statusBars),
     ) {
         Row(

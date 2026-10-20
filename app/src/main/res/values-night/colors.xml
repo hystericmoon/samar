@@ -3,5 +3,5 @@
     <!-- Dark icon variant: Cornflower mark on Night (used by launchers that follow dark mode) -->
     <color name="icon_background">#121118</color>
     <color name="icon_mark">#5882E8</color>
-    <color name="window_background">#121118</color>
+    <color name="window_background">#090B2A</color>
 </resources>

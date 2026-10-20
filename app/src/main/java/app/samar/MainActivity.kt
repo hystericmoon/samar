@@ -126,13 +126,15 @@ class MainActivity : ComponentActivity() {
                         themeMode = if (dark) ThemeMode.Dark else ThemeMode.Light
                         themePref.save(themeMode)
                     },
+                    selectionMode = editor.selectionMode,
+                    onSelectionModeChange = editor::changeSelectionMode,
                     recent = recent,
                     onChoosePhoto = {
                         pickPhoto.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
                     },
                     onOpenRecent = openRecent,
                     onSeeAll = { showAllRecent = true },
-                    onOpenNotices = { showNotices = true },
+                    onOpenAbout = { showNotices = true },
                 )
             }
         }
@@ -146,4 +148,5 @@ private fun RecentEntry.toPhoto() = RecentPhoto(
     effectName = effect.label,
     savedLabel = "saved ${savedDate.format(Date(savedAt))}",
     thumbnail = thumbnail,
+    facesHidden = regions.count { it.blurred },
 )
