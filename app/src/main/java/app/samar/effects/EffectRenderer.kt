@@ -95,6 +95,11 @@ object EffectRenderer {
             patch.recycle()
             return
         }
+        if (effect == Effect.Solid) {
+            // Solid is a full, hard-edged cover: no soft fade.
+            drawShape(canvas, region.shape, region.bounds, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = solidColor })
+            return
+        }
         val size = faceSize(region)
         val outer = featheredBounds(region)
         val patchRect = Rect(

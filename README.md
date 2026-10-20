@@ -31,8 +31,8 @@ You took a photo with friends, strangers or kids in it, and you want to share it
 | 🧭 **No tracking** | No accounts, no analytics, no ads, no uploads. |
 | 🧹 **Clean copies** | Saved photos have location and camera info (EXIF, GPS) removed by default. |
 | 🎨 **Five looks** | Gaussian, Glass, Smear, Pixelate and Solid, with one intensity slider. |
-| ✋ **You stay in control** | Tap any face to keep it visible, or draw over a face the detector missed. |
-| 🌗 **Light and dark** | Follows your phone, or set it yourself on Home. |
+| ✋ **You stay in control** | Auto blurs every face it finds; Manual lets you pick. Resize any blur, keep faces visible, or draw over one the detector missed. |
+| 🌗 **Light and dark** | Follows your phone, or switch it with the moon button on Home. |
 | 🔄 **Stays up to date** | Checks GitHub once a day for a new version and updates in two taps. You can turn this off. |
 
 <br>
@@ -41,13 +41,13 @@ You took a photo with friends, strangers or kids in it, and you want to share it
 
 <img src="docs/readme/effects.png" alt="The same portrait hidden with Gaussian, Glass, Smear, Pixelate and Solid">
 
-Every effect fades softly into the hair and skin around the face, so the result looks natural rather than cut out. Its strength scales with each face's size, so what you see in the preview is what gets saved.
+Every effect except Solid fades softly into the hair and skin around the face, so the result looks natural rather than cut out. Its strength scales with each face's size, so what you see in the preview is what gets saved.
 
 - **Gaussian**: a soft blur.
 - **Glass**: frosted blur with a light white tint.
 - **Smear**: a long-exposure "head shake". The head streaks sideways in fine lines and fades into the background.
 - **Pixelate**: a blocky mosaic.
-- **Solid**: a flat dark cover. Always fully opaque.
+- **Solid**: a flat, hard-edged cover in charcoal, black, white, navy or neon. Always fully opaque.
 
 <img src="docs/readme/smear.png" alt="Before and after: a smiling man in a batik headwrap, then the same photo with the Smear effect on his face">
 
@@ -60,7 +60,7 @@ Every effect fades softly into the hair and skin around the face, so the result 
 
 1. **Choose photo.** Tap *Choose photo* on Home and pick an image. samar opens it in the editor and finds the faces.
 2. **Check the faces.** Each face gets a box and a round toggle above it. A ✓ means it will be hidden; tap it to switch to ＋ and keep that face visible. Pinch or double-tap to zoom in on small faces.
-3. **Pick a look.** Scroll the effect row and drag *Intensity* until you're happy. Tap the 👁 button on the photo to compare with the original.
+3. **Pick a look.** Scroll the effect row and drag *Intensity* until you're happy (with *Solid*, pick a colour instead). Tap the 👁 button on the photo to compare with the original, or ▢ to hide the boxes and preview the result.
 4. **Add a missed face** if needed. Tap *Add missed face*, drag the shape over the face (pinch or use the handles to resize, switch between Ellipse and Rectangle), then tap *Add blur*. Undo is in the top-right corner.
 5. **Export.** Check *Before / After*, then tap **Save to gallery** (it goes to `Pictures/samar`) or **Share**.
 
@@ -74,7 +74,7 @@ Saved photos appear under *Recent* on Home. Tap one to reopen it with your edits
 
 samar isn't on Google Play yet. To install it from GitHub:
 
-1. On your Android phone, open the [latest release](https://github.com/hystericmoon/samar/releases/latest) and download **`samar-1.0.apk`**.
+1. On your Android phone, open the [latest release](https://github.com/hystericmoon/samar/releases/latest) and download **`samar-1.2.apk`**.
 2. Open the downloaded file. If Android asks, allow your browser or Files app to *install unknown apps*. You can turn this off again afterwards.
 3. Tap **Install**. Google Play Protect may say it doesn't recognise the app, because it isn't from the Play Store. Choose **Install anyway**.
 
@@ -85,7 +85,7 @@ Needs Android 8.0 (Oreo) or newer. On Android 8 and 9, samar asks for storage ac
 
 <br>
 
-Each release lists the APK's SHA-256 fingerprint. On a computer, run `shasum -a 256 samar-1.0.apk` and compare.
+Each release lists the APK's SHA-256 fingerprint. On a computer, run `shasum -a 256 samar-1.2.apk` and compare.
 
 The APK is signed with this certificate (SHA-256):
 
@@ -130,7 +130,7 @@ Open the folder in Android Studio to run it on a phone or emulator. Release buil
 
 samar doesn't collect, store or send any data. Photos are read only when you pick them and are processed in memory on your phone. The *Recent* list (small blurred thumbnails and your edits) is stored privately on your phone and is removed when you clear it or uninstall the app.
 
-**Updates.** Once a day, samar asks GitHub's public API for the latest samar release. That request contains nothing about you or your photos; GitHub sees an ordinary request, like opening the releases page. If there's a newer version, a banner appears on Home. The download is checked (it must be samar, newer, and signed with the same key) before Android's installer opens and asks you to confirm. Turn automatic checks off in *Home → About samar*.
+**Updates.** Once a day, samar asks GitHub's public API for the latest samar release. That request contains nothing about you or your photos; GitHub sees an ordinary request, like opening the releases page. If there's a newer version, a banner appears on Home. The download is checked (it must be samar, newer, and signed with the same key) before Android's installer opens and asks you to confirm. Turn automatic checks off in *Home → ⓘ About samar*. To update now, open *About samar* and tap *Check for updates*.
 
 **ML Kit.** ML Kit includes a usage-logging component. samar removes the route it would upload through, so it has nowhere to send anything.
 
@@ -140,7 +140,7 @@ samar doesn't collect, store or send any data. Photos are read only when you pic
 
 - Fonts: Bricolage Grotesque and Instrument Sans, under the [SIL Open Font License 1.1](app/src/main/res/raw).
 - Face detection: [Google ML Kit](https://developers.google.com/ml-kit/vision/face-detection) (bundled model).
-- Every library's licence is listed in the app under *Home → Open-source notices*.
+- Every library's licence is listed in the app under *Home → ⓘ About samar → Open-source notices*.
 - Photos in this README are from Unsplash, free to use under the [Unsplash License](https://unsplash.com/license): [four friends](https://unsplash.com/photos/four-men-pose-for-a-photo-outside-LNoV6ykJUPo) by setengah limasore and [portrait](https://unsplash.com/photos/man-wearing-turban-smiling-au84UJ1KmNU) by gede adhiputra.
 
 ## Licence

@@ -29,12 +29,12 @@ Notes:
 
 - Smear: use an AGSL shader on Android 13+ and a CPU version with the same recipe on older phones. Show a one-line note when Smear is selected: it is a stylistic effect and hides identity less reliably than Solid or Pixelate.
 - Mask each face with a slightly padded ellipse (about 20% larger than the detected box) so hairline and ears are covered.
-- Soft edges: every effect fades out over about 15% of the face's size just outside the area, so it blends into hair and skin. Inside the area it stays fully opaque.
+- Soft edges: every effect except Solid fades out over about 15% of the face's size just outside the area, so it blends into hair and skin. Inside the area it stays fully opaque.
 - Smear has its own edge: streaks carry only the head's colours (the background is never dragged in), cover the hair a little above the face box, and fade out softly. The face is fully covered except across the outer padding rim, where it eases off so no oval outline shows. Streak length 50–140% and tails 30–55% of the face width, from 0 to 100% intensity; slightly darker than the original.
 - Rotate the image by its EXIF orientation before detection, or boxes will be misaligned on portrait photos.
 - Use a downscaled copy for the live preview (1600px long edge). Run the full-resolution pass only on export.
 - Strength scales with each face's size, so the saved photo looks the same as the preview.
-- Solid is always a full, opaque cover. When Solid is selected, the intensity slider is replaced by a Colour row ("Always full"): Charcoal #22252B (default), Black, White, Navy #1F06AC, Neon #E3EF4F. 48dp targets, the chosen one gets an emphasis ring and a check. Saved with the photo in Recent and undoable.
+- Solid is always a full, opaque cover with a hard edge (no soft fade). When Solid is selected, the intensity slider is replaced by a Colour row ("Always full"): Charcoal #22252B (default), Black, White, Navy #1F06AC, Neon #E3EF4F. 48dp targets, the chosen one gets an emphasis ring and a check. Saved with the photo in Recent and undoable.
 - Smear note text: "Smear is a stylistic effect. Solid or Pixelate hide identity more reliably."
 
 ## Screens
