@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- No INTERNET permission: samar never talks to a network. ML Kit's usage-logging
-         library (datatransport) asks for it, so it's removed here. Without it the
-         system blocks every network connection from the app. -->
-    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+    <!-- Internet is used for one thing only: checking GitHub for a newer samar and downloading
+         it (About > Check for updates). Photos never leave the phone. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Lets samar hand a downloaded update to Android's installer (the user still confirms). -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- Only Android 8–9 need this to save into Pictures; newer versions need no permission. -->
     <uses-permission
@@ -38,6 +39,16 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/export_paths" />
         </provider>
+
+        <!-- ML Kit's usage logging (Firelog) would upload through this backend now that the app
+             has internet. Removing it leaves the logger with nowhere to send anything. -->
+        <service
+            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+            tools:ignore="MissingClass">
+            <meta-data
+                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+                tools:node="remove" />
+        </service>
 
         <!-- Lets Google Play install the modern photo picker on Android 8 to 10. -->
         <service

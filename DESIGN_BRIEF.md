@@ -11,7 +11,7 @@ The source of truth for how samar should look and behave.
 - Name: "samar" is Indonesian for faint, indistinct, hard to make out. Always lowercase.
 - Face detection: ML Kit Face Detection, with the model bundled in the app (no download from Google Play services).
 - App ID: `app.samar`. Runs on Android 8.0 and newer (minSdk 26). Compiled against and targeting Android SDK 37.
-- The app has no INTERNET permission.
+- Internet is used only to check GitHub for samar updates (once a day, can be turned off in About) and download them. Photos never leave the phone. ML Kit's logging backend is removed so it can't upload.
 
 ## Effects
 
@@ -190,7 +190,13 @@ On a 64 x 64 grid, every bar has height 7.5 and corner radius 3.75:
 
 - Everything runs on the device.
 - Strip EXIF and GPS from exported photos by default.
-- Do not add analytics or network calls without asking me.
+- Do not add analytics or network calls without asking me. (Approved 2026-10-20: the GitHub update check.)
+
+## Updates
+
+- "About samar" (link at the bottom of Home): version, "Check for updates automatically" switch (on by default), Check for updates button with a status line, then the open-source notices.
+- Automatic check at most once a day on launch. When a newer release is found, Home shows a glass "Update available" banner above Recent with an Update button and download progress.
+- The APK is verified (package app.samar, higher versionCode, same signing certificate) before Android's installer opens. Android 8+ first asks the user to allow samar to install apps.
 
 ## Build order
 

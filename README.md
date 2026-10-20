@@ -11,7 +11,7 @@ Everything stays on your phone.
 
 <br>
 
-[**Download for Android**](https://github.com/hystericmoon/samar/releases/latest) &nbsp;·&nbsp; Android 8.0 or newer &nbsp;·&nbsp; No internet permission
+[**Download for Android**](https://github.com/hystericmoon/samar/releases/latest) &nbsp;·&nbsp; Android 8.0 or newer &nbsp;·&nbsp; Photos never leave your phone
 
 <br>
 
@@ -27,12 +27,13 @@ You took a photo with friends, strangers or kids in it, and you want to share it
 
 | | |
 |---|---|
-| 🔒 **Fully on-device** | Faces are found with Google's ML Kit model, which is *bundled inside the app*. samar has no internet permission at all, so Android blocks every network connection. |
+| 🔒 **Fully on-device** | Faces are found with Google's ML Kit model, which is *bundled inside the app*. Photos are never uploaded; the only connection samar makes is to GitHub, to check for its own updates. |
 | 🧭 **No tracking** | No accounts, no analytics, no ads, no uploads. |
 | 🧹 **Clean copies** | Saved photos have location and camera info (EXIF, GPS) removed by default. |
 | 🎨 **Five looks** | Gaussian, Glass, Smear, Pixelate and Solid, with one intensity slider. |
 | ✋ **You stay in control** | Tap any face to keep it visible, or draw over a face the detector missed. |
 | 🌗 **Light and dark** | Follows your phone, or set it yourself on Home. |
+| 🔄 **Stays up to date** | Checks GitHub once a day for a new version and updates in two taps. You can turn this off. |
 
 <br>
 
@@ -62,6 +63,8 @@ Every effect fades softly into the hair and skin around the face, so the result 
 3. **Pick a look.** Scroll the effect row and drag *Intensity* until you're happy. Tap the 👁 button on the photo to compare with the original.
 4. **Add a missed face** if needed. Tap *Add missed face*, drag the shape over the face (pinch or use the handles to resize, switch between Ellipse and Rectangle), then tap *Add blur*. Undo is in the top-right corner.
 5. **Export.** Check *Before / After*, then tap **Save to gallery** (it goes to `Pictures/samar`) or **Share**.
+
+Tap a face's box to **adjust its blur**: drag the handles to make it bigger or smaller, then tap *Update blur*. Use **Select faces → Manual** to start with nothing blurred and pick faces yourself, and the ▢ **Preview** button on the photo to hide the boxes and see the result.
 
 Saved photos appear under *Recent* on Home. Tap one to reopen it with your edits, or use *See all → Edit* to remove items. Removing from Recent never deletes the copy in your gallery.
 
@@ -127,7 +130,9 @@ Open the folder in Android Studio to run it on a phone or emulator. Release buil
 
 samar doesn't collect, store or send any data. Photos are read only when you pick them and are processed in memory on your phone. The *Recent* list (small blurred thumbnails and your edits) is stored privately on your phone and is removed when you clear it or uninstall the app.
 
-ML Kit includes a usage-logging component. samar removes the internet permission it asks for, so the system blocks it from sending anything.
+**Updates.** Once a day, samar asks GitHub's public API for the latest samar release. That request contains nothing about you or your photos; GitHub sees an ordinary request, like opening the releases page. If there's a newer version, a banner appears on Home. The download is checked (it must be samar, newer, and signed with the same key) before Android's installer opens and asks you to confirm. Turn automatic checks off in *Home → About samar*.
+
+**ML Kit.** ML Kit includes a usage-logging component. samar removes the route it would upload through, so it has nowhere to send anything.
 
 <br>
 

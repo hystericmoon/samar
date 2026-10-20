@@ -44,6 +44,7 @@ import app.samar.data.Notice
 import app.samar.data.Notices
 import app.samar.data.NoticesLoader
 import app.samar.ui.components.GlassIconButton
+import app.samar.ui.components.UpdateSection
 import app.samar.ui.icons.SamarIcons
 import app.samar.ui.theme.Samar
 import app.samar.ui.theme.SamarShapes
@@ -52,7 +53,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Open-source notices: the bundled fonts and every library in the app, each with its
- * licence. Reached from the small link at the bottom of Home.
+ * licence, under the version and update controls (About samar). Reached from the link at the bottom of Home.
  */
 @Composable
 fun NoticesScreen(onBack: () -> Unit) {
@@ -70,7 +71,20 @@ fun NoticesScreen(onBack: () -> Unit) {
         NoticeText(selected, onBack = { open = null })
     } else {
         BackHandler(onBack = onBack)
-        NoticeScaffold("Open-source notices", onBack) {
+        NoticeScaffold("About samar", onBack) {
+            item(key = "update") {
+                UpdateSection(Modifier.padding(horizontal = 24.dp, vertical = 8.dp))
+            }
+            item(key = "notices-heading") {
+                Text(
+                    "Open-source notices",
+                    style = Samar.type.sectionHeading,
+                    color = Samar.colors.text,
+                    modifier = Modifier
+                        .padding(start = 24.dp, end = 24.dp, top = 24.dp)
+                        .semantics { heading() },
+                )
+            }
             item {
                 Text(
                     "samar is made with these fonts and open-source libraries. Tap one to read its licence.",

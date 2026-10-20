@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import app.samar.ui.components.HeroAnimation
 import app.samar.ui.components.PillButton
 import app.samar.ui.components.RecentGrid
+import app.samar.ui.components.UpdateBanner
 import app.samar.ui.components.RecentThumb
 import app.samar.ui.components.SamarWordmark
 import app.samar.ui.components.ThemeSwitch
@@ -108,6 +109,7 @@ fun HomeScreen(
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(32.dp))
+            UpdateBanner(Modifier.padding(bottom = 24.dp))
             RecentGrid(
                 items = recent.take(HOME_RECENT_COUNT),
                 onOpen = onOpenRecent,
@@ -132,7 +134,7 @@ fun HomeScreen(
     }
 }
 
-/** Quiet link to the open-source notices, at the very end of the scrolling content. */
+/** Quiet link to About samar (version, updates, open-source notices), at the end of the scrolling content. */
 @Composable
 private fun NoticesLink(onClick: () -> Unit) {
     Box(
@@ -143,7 +145,7 @@ private fun NoticesLink(onClick: () -> Unit) {
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text("Open-source notices", style = Samar.type.label, color = Samar.colors.mutedText)
+        Text("About samar", style = Samar.type.label, color = Samar.colors.mutedText)
     }
 }
 

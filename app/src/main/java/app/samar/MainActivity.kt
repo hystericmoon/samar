@@ -31,6 +31,7 @@ import app.samar.ui.export.ExportScreen
 import app.samar.ui.home.HomeScreen
 import app.samar.ui.home.RecentPhoto
 import app.samar.ui.notices.NoticesScreen
+import app.samar.update.Updater
 import app.samar.ui.recent.RecentScreen
 import app.samar.ui.theme.SamarTheme
 import java.text.SimpleDateFormat
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val themePref = ThemePreference(this)
+        Updater.maybeAutoCheck(this) // at most once a day; can be turned off in About
 
         setContent {
             var themeMode by remember { mutableStateOf(themePref.load()) }
