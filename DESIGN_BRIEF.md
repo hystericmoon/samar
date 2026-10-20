@@ -61,12 +61,14 @@ Notes:
 - Photo preview. Each detected face has a box and a toggle (check = blurred, plus = not blurred). Tap to switch.
 - An eye button on the photo shows the original when tapped (tap to toggle, not press-and-hold). It is a dark circle with a faint light ring, so it shows on any background.
 - Zoom: pinch or double-tap (up to 3x), and drag to pan while zoomed. Face boxes follow the zoom, but toggles stay full size (48dp targets). Zoom is kept while editing and resets only for a new photo.
-- Tapping the face box itself also toggles it. TalkBack uses the toggle.
+- Tapping the face box opens it in the placement screen ("Adjust blur area", button "Update blur") to make that blur bigger or smaller, move it, or switch Ellipse/Rectangle. Updating also turns its blur on. TalkBack: the toggle has an "Adjust blur area" action.
+- A Preview button (corner-brackets icon, glass, next to the eye) hides all boxes and toggles to show the clean result; tap again to bring them back.
 - Face boxes use 14dp corners, at most a quarter of the box size, so small faces still read as boxes.
 - Bottom sheet (28dp top corners):
   - Row: a two-line face count on the left and an "Add missed face" glass chip on the right.
     - Strong line "3 faces" (16, bold), quiet line under it (13, muted): "2 blurred · 1 visible", "All blurred", or "None blurred". With no faces: "No faces found" / "Use Add missed face to blur one."
     - TalkBack reads one announcement: "3 faces found, 2 blurred".
+  - "Select faces" with an Auto / Manual switch (48dp tall, remembered). Auto: every face found is blurred. Manual: faces are found but none blurred; the quiet line reads "Tap ＋ on a face to blur it". Switching sets all detected faces at once (undoable); added areas are never changed.
   - Horizontally scrolling row of circular effect swatches with labels. Each swatch is the soft-3D clay person from the Home hero, with the real effect applied to its face and a glass-marble sheen. The selected swatch has an accent ring; when chosen it pops up slightly (spring, about 6%) and the person glances left and right once (about 0.6 s). No motion with "Remove animations" on. The row scrolls, so the last swatch is partly visible as a cue.
   - Intensity slider with a percentage.
   - Pill "Export" button.
@@ -123,9 +125,13 @@ When the user saves a photo, keep a small local list (thumbnail plus effect used
 | muted text | #55536A | #A9A6BF |
 | outline | #8C89A3 | #6F6C86 |
 | divider | #DEDCE8 | #2C2A38 |
-| accent | #5B3FF5 | #A596FF |
-| accent tint | #E7E2FF | #2D2850 |
-| text on accent | #FFFFFF | #14121F |
+| accent | #1F06AC (Navy) | #5882E8 (Cornflower) |
+| accent tint | #E4E1F7 | #1E2550 |
+| text on accent | #FFFFFF | #0B0A24 |
+
+Palette (from the user's reference): Navy #1F06AC, Royal #0F42C0, Cornflower #5882E8, Neon #E3EF4F.
+
+Photo overlays (face boxes, face toggles, the blur-area shape and its handles, the Home hero's box and badge) use Neon #E3EF4F with Navy marks and a dark halo, in both themes. Neon on a white photo is only 1.26:1, so the halo is what keeps 3:1.
 
 Photo placeholder colors used in the design (for previews and empty states only): #C9D6D3, #BFD0CE.
 
@@ -166,9 +172,9 @@ On a 64 x 64 grid, every bar has height 7.5 and corner radius 3.75:
 | 5 | 7.51 | 41.3 | 44.98 |
 | 6 | 13.75 | 50.0 | 28.5 |
 
-- App icon: white mark on #5B3FF5.
+- App icon: white mark on #1F06AC (Navy).
 - Themed (monochrome) icon: the mark in a single color.
-- Dark variant: #A596FF mark on #121118 (used by launchers that follow dark mode).
+- Dark variant: #5882E8 mark on #121118 (used by launchers that follow dark mode).
 - In the Home top bar, the mark uses the accent color next to the wordmark.
 
 ## Accessibility

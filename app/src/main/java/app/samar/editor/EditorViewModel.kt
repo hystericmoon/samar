@@ -14,6 +14,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.samar.data.RecentEntry
 import app.samar.data.RecentStore
+import app.samar.data.SelectionMode
+import app.samar.data.SelectionPreference
 import app.samar.effects.Effect
 import app.samar.effects.EffectRenderer
 import app.samar.export.ExportOptions
@@ -49,6 +51,12 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     /** 0..1; default 70%. */
     var intensity by mutableStateOf(0.7f); private set
     var showOriginal by mutableStateOf(false); private set
+    /** Preview: hides the face boxes and toggles so the result can be seen clean. */
+    var hideOverlays by mutableStateOf(false); private set
+
+    private val selectionPref = SelectionPreference(app)
+    /** Auto blurs every face found; Manual finds them but leaves the choice to the user. Remembered. */
+    var selectionMode by mutableStateOf(selectionPref.load()); private set
 
     /** Shared zoom (1..3) and the photo point at the centre of the view; null = photo centre. */
     var viewZoom by mutableFloatStateOf(1f); private set
@@ -63,6 +71,8 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
 
     /** The blur area being placed, or null when not on the Add missed face screen. */
     var draft: FaceRegion? by mutableStateOf(null); private set
+    /** Set when the placement screen is adjusting an existing face instead of adding one. */
+    var editingId: Int? by mutableStateOf(null); private set
     /** Live effect preview for [draft]: the patch and the photo-px point it is drawn at. */
     var draftPatch: Pair<Bitmap, android.graphics.Point>? by mutableStateOf(null); private set
     private var draftJob: Job? = null
@@ -74,6 +84,13 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         val s = minOf(b.width, b.height) * 0.22f / viewZoom
         val w = s * 0.82f
         setDraftBounds(RectF(c.x - w / 2, c.y - s / 2, c.x + w / 2, c.y + s / 2), RegionShape.Ellipse)
+    }
+
+    /** Opens the placement screen on an existing face, to resize, move or reshape its blur. */
+    fun startEdit(id: Int) {
+        val face = faces.firstOrNull { it.id == id } ?: return
+        editingId = id
+        setDraftBounds(face.bounds, face.shape)
     }
 
     fun setDraftShape(shape: RegionShape) {
@@ -88,7 +105,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         val h = r.height().coerceIn(MIN_DRAFT, b.height.toFloat())
         val left = r.left.coerceIn(0f, b.width - w)
         val top = r.top.coerceIn(0f, b.height - h)
-        val region = FaceRegion(id = nextId(), bounds = RectF(left, top, left + w, top + h), shape = shape)
+        val region = FaceRegion(id = editingId ?: nextId(), bounds = RectF(left, top, left + w, top + h), shape = shape)
         draft = region
         val e = effect; val i = intensity
         draftJob?.cancel()
@@ -102,7 +119,13 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     fun commitDraft() {
         val d = draft ?: return
         remember()
-        faces = faces + d
+        val id = editingId
+        faces = if (id != null) {
+            // Adjusting turns the blur on: the user is shaping it to hide that face.
+            faces.map { if (it.id == id) it.copy(bounds = d.bounds, shape = d.shape, blurred = true) else it }
+        } else {
+            faces + d.copy(manual = true)
+        }
         closeDraft()
         rerender()
     }
@@ -113,6 +136,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         draftJob?.cancel()
         draft = null
         draftPatch = null
+        editingId = null
     }
 
     private fun nextId() = (faces.maxOfOrNull { it.id } ?: -1) + 1
@@ -207,7 +231,8 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     effect = restore.effect
                     intensity = restore.intensity
                 } else {
-                    faces = FaceFinder.detect(bitmap)
+                    val auto = selectionMode == SelectionMode.Auto
+                    faces = FaceFinder.detect(bitmap).map { it.copy(blurred = auto) }
                 }
                 rerender()
             } catch (e: CancellationException) {
@@ -257,6 +282,22 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         showOriginal = !showOriginal
     }
 
+    fun togglePreview() {
+        hideOverlays = !hideOverlays
+    }
+
+    /** Switches Auto / Manual: detected faces are all blurred (Auto) or all cleared (Manual). Undoable. */
+    fun changeSelectionMode(mode: SelectionMode) {
+        if (mode == selectionMode) return
+        selectionMode = mode
+        selectionPref.save(mode)
+        if (faces.none { !it.manual }) return
+        remember()
+        val auto = mode == SelectionMode.Auto
+        faces = faces.map { if (it.manual) it else it.copy(blurred = auto) }
+        rerender()
+    }
+
     fun undo() {
         val s = history.removeLastOrNull() ?: return
         faces = s.faces; effect = s.effect; intensity = s.intensity
@@ -285,7 +326,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         loadJob?.cancel(); renderJob?.cancel()
         uri = null; loading = false; failed = false; fromRecent = false
         base = null; rendered = null; faces = emptyList()
-        effect = Effect.Gaussian; intensity = 0.7f; showOriginal = false
+        effect = Effect.Gaussian; intensity = 0.7f; showOriginal = false; hideOverlays = false
         viewZoom = 1f; viewCenter = null
         history.clear(); canUndo = false; intensityAtDragStart = null
         closeDraft()

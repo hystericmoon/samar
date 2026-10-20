@@ -74,7 +74,13 @@ import app.samar.ui.components.liquidGlass
 import app.samar.ui.components.FaceToggle
 import app.samar.ui.components.IntensitySlider
 import app.samar.ui.components.PillButton
+import app.samar.ui.components.SegmentedControl
+import app.samar.data.SelectionMode
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
 import app.samar.ui.icons.SamarIcons
+import app.samar.ui.theme.Overlay
 import app.samar.ui.theme.Samar
 import app.samar.ui.theme.SamarShapes
 
@@ -114,20 +120,33 @@ fun EditorScreen(vm: EditorViewModel, onBack: () -> Unit) {
                         PhotoWithFaces(
                             image = if (vm.showOriginal) base else (vm.rendered ?: base),
                             faces = vm.faces,
-                            showOverlays = !vm.showOriginal,
+                            showOverlays = !vm.showOriginal && !vm.hideOverlays,
                             onToggle = vm::toggleFace,
+                            onAdjust = vm::startEdit,
                             zoom = vm.viewZoom,
                             center = vm.viewCenter,
                             onViewportChange = vm::setViewport,
                             modifier = Modifier.fillMaxSize(),
                         )
-                        ShowOriginalButton(
-                            showing = vm.showOriginal,
-                            onToggle = vm::toggleOriginal,
-                            modifier = Modifier
+                        Row(
+                            Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(end = 16.dp, bottom = SheetOverlap + 16.dp),
-                        )
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            PhotoToggleButton(
+                                on = vm.hideOverlays,
+                                onToggle = vm::togglePreview,
+                                label = "Preview without face boxes",
+                                icon = if (vm.hideOverlays) SamarIcons.FrameOff else SamarIcons.Frame,
+                            )
+                            PhotoToggleButton(
+                                on = vm.showOriginal,
+                                onToggle = vm::toggleOriginal,
+                                label = "Show original photo",
+                                icon = if (vm.showOriginal) SamarIcons.EyeOff else SamarIcons.Eye,
+                            )
+                        }
                     }
                 }
             }
@@ -178,6 +197,7 @@ private fun PhotoWithFaces(
     faces: List<FaceRegion>,
     showOverlays: Boolean,
     onToggle: (Int) -> Unit,
+    onAdjust: (Int) -> Unit,
     zoom: Float,
     center: Offset?,
     onViewportChange: (Float, Offset) -> Unit,
@@ -219,7 +239,7 @@ private fun PhotoWithFaces(
                     val tl = t.toView(face.bounds.left, face.bounds.top)
                     val fw = face.bounds.width() * t.k
                     val fh = face.bounds.height() * t.k
-                    // Tap anywhere on the face box too (TalkBack uses the toggle instead).
+                    // Tapping the box opens it for resizing (TalkBack: the toggle's "Adjust blur area" action).
                     Box(
                         Modifier
                             .offset { IntOffset(tl.x.roundToInt(), tl.y.roundToInt()) }
@@ -228,7 +248,7 @@ private fun PhotoWithFaces(
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                            ) { onToggle(face.id) },
+                            ) { onAdjust(face.id) },
                     )
                     // Above the box; pinned to the top edge while the face is still on screen.
                     var toggleY = tl.y - toggleLift
@@ -237,9 +257,15 @@ private fun PhotoWithFaces(
                         faceNumber = index + 1,
                         blurred = face.blurred,
                         onToggle = { onToggle(face.id) },
-                        modifier = Modifier.offset {
-                            IntOffset((tl.x + fw / 2f - toggleHalf).roundToInt(), toggleY.roundToInt())
-                        },
+                        modifier = Modifier
+                            .offset {
+                                IntOffset((tl.x + fw / 2f - toggleHalf).roundToInt(), toggleY.roundToInt())
+                            }
+                            .semantics {
+                                customActions = listOf(
+                                    CustomAccessibilityAction("Adjust blur area") { onAdjust(face.id); true },
+                                )
+                            },
                     )
                 }
             }
@@ -263,18 +289,25 @@ private fun FaceBoxes(
             val effect = if (f.blurred) null else dash
             // 14dp on big faces, but never more than a quarter of the box (small faces stay boxes).
             val corner = CornerRadius(minOf(14.dp.toPx(), minOf(box.width, box.height) / 4f))
-            // Dark halo keeps the white line visible on light photos (3:1 contrast).
+            // Neon line with a dark halo, so it reads on light and dark photos alike (3:1 contrast).
             drawRoundRect(
-                Color.Black.copy(alpha = 0.35f), topLeft, box, corner,
-                style = Stroke(4.dp.toPx(), pathEffect = effect),
+                Color.Black.copy(alpha = 0.55f), topLeft, box, corner,
+                style = Stroke(4.5.dp.toPx(), pathEffect = effect),
             )
-            drawRoundRect(Color.White, topLeft, box, corner, style = Stroke(2.dp.toPx(), pathEffect = effect))
+            drawRoundRect(Overlay.Highlight, topLeft, box, corner, style = Stroke(2.dp.toPx(), pathEffect = effect))
         }
     }
 }
 
+/** Round smoky-glass switch on the photo (Preview, Show original). */
 @Composable
-private fun ShowOriginalButton(showing: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
+private fun PhotoToggleButton(
+    on: Boolean,
+    onToggle: () -> Unit,
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    modifier: Modifier = Modifier,
+) {
     val interaction = remember { MutableInteractionSource() }
     Box(
         modifier
@@ -283,16 +316,13 @@ private fun ShowOriginalButton(showing: Boolean, onToggle: () -> Unit, modifier:
             .liquidGlass(SamarShapes.pill, GlassTone.Dark, interaction, elevation = 4.dp)
             .border(1.dp, Color.White.copy(alpha = 0.4f), SamarShapes.pill)
             .toggleable(
-                value = showing, interactionSource = interaction, indication = null,
+                value = on, interactionSource = interaction, indication = null,
                 role = Role.Switch, onValueChange = { onToggle() },
             )
-            .semantics { contentDescription = "Show original photo" },
+            .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(
-            if (showing) SamarIcons.EyeOff else SamarIcons.Eye,
-            contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp),
-        )
+        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
     }
 }
 
@@ -314,6 +344,8 @@ private fun EditorSheet(
         vm.failed -> Triple("", "", "")
         total == 0 -> Triple("No faces found", "Use Add missed face to blur one.", "No faces found. Use Add missed face to blur one.")
         visible == 0 -> Triple(faces, "All blurred", "$faces found, $blurred blurred")
+        blurred == 0 && vm.selectionMode == SelectionMode.Manual ->
+            Triple(faces, "Tap ＋ on a face to blur it", "$faces found, none blurred. Tap a face's toggle to blur it.")
         blurred == 0 -> Triple(faces, "None blurred", "$faces found, $blurred blurred")
         else -> Triple(faces, "$blurred blurred · $visible visible", "$faces found, $blurred blurred")
     }
@@ -364,6 +396,8 @@ private fun EditorSheet(
                 }
             }
         }
+        Spacer(Modifier.height(8.dp))
+        SelectionModeRow(vm.selectionMode, vm::changeSelectionMode, Modifier.padding(horizontal = 24.dp))
         Spacer(Modifier.height(12.dp))
         EffectRow(selected = vm.effect, onSelect = vm::selectEffect, modifier = Modifier.fillMaxWidth())
         if (vm.effect == Effect.Smear) {
@@ -388,5 +422,26 @@ private fun EditorSheet(
         )
         Spacer(Modifier.height(12.dp))
         PillButton(text = "Export", onClick = onExport, modifier = Modifier.padding(horizontal = 24.dp))
+    }
+}
+
+/** "Faces" Auto / Manual: Auto blurs every face found, Manual lets the user pick. */
+@Composable
+private fun SelectionModeRow(mode: SelectionMode, onChange: (SelectionMode) -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            "Select faces",
+            style = Samar.type.label,
+            color = Samar.colors.mutedText,
+            modifier = Modifier.weight(1f),
+        )
+        SegmentedControl(
+            options = SelectionMode.entries,
+            selected = mode,
+            label = { it.name },
+            onSelect = onChange,
+            height = 48.dp,
+            modifier = Modifier.width(190.dp),
+        )
     }
 }

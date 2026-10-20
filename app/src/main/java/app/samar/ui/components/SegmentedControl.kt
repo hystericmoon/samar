@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.samar.ui.theme.Samar
 import app.samar.ui.theme.SamarShapes
@@ -40,12 +41,13 @@ fun <T> SegmentedControl(
     onSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
     @Suppress("UNUSED_PARAMETER") trackColor: Color = Samar.colors.background,
+    height: Dp = 52.dp,
 ) {
     val c = Samar.colors
     BoxWithConstraints(
         modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .height(height)
             .liquidGlass(SamarShapes.pill, GlassTone.Clear, outline = true)
             .padding(4.dp),
     ) {

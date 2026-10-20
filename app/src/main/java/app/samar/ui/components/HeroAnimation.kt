@@ -48,6 +48,7 @@ import app.samar.editor.FaceRegion
 import app.samar.effects.Effect
 import app.samar.effects.EffectRenderer
 import app.samar.ui.components.ClayPerson.drawClayPerson
+import app.samar.ui.theme.Overlay
 import app.samar.ui.theme.Samar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -112,7 +113,7 @@ fun HeroAnimation(modifier: Modifier = Modifier, size: Dp = 196.dp) {
     Canvas(modifier.size(size)) {
         val t = if (still) STILL_TIME else (timeMs % LOOP_MS) / 1000f
         val effect = Effect.entries[if (still) 0 else ((timeMs / LOOP_MS) % Effect.entries.size).toInt()]
-        drawFrame(t, blurred?.get(effect), gap = c.accentTint, badge = c.accent, onBadge = c.textOnAccent)
+        drawFrame(t, blurred?.get(effect), gap = c.accentTint, badge = Overlay.Highlight, onBadge = Overlay.Ink)
     }
 }
 
@@ -194,15 +195,15 @@ private fun DrawScope.drawFaceBox(face: Rect, drawn: Float, alpha: Float, u: Flo
         setPath(path, false)
         getSegment(0f, length * drawn, partial, true)
     }
-    drawPath(partial, Color.Black.copy(alpha = 0.3f * alpha), style = Stroke(4f * u, cap = StrokeCap.Round))
-    drawPath(partial, Color.White.copy(alpha = alpha), style = Stroke(2f * u, cap = StrokeCap.Round))
+    drawPath(partial, Color.Black.copy(alpha = 0.45f * alpha), style = Stroke(4f * u, cap = StrokeCap.Round))
+    drawPath(partial, Overlay.Highlight.copy(alpha = alpha), style = Stroke(2f * u, cap = StrokeCap.Round))
 }
 
 private fun DrawScope.drawBadge(center: Offset, scale: Float, alpha: Float, u: Float, fill: Color, mark: Color) {
     val r = 13f * u * scale
     if (r <= 0f) return
     drawCircle(fill.copy(alpha = alpha), radius = r, center = center)
-    drawCircle(Color.White.copy(alpha = alpha), radius = r, center = center, style = Stroke(2f * u))
+    drawCircle(Overlay.Ink.copy(alpha = alpha), radius = r, center = center, style = Stroke(2f * u))
     val k = r / 13f
     val check = Path().apply {
         moveTo(center.x - 5.5f * k, center.y + 0.5f * k)

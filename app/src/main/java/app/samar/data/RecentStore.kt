@@ -23,12 +23,14 @@ data class SavedRegion(
     val left: Float, val top: Float, val right: Float, val bottom: Float,
     val blurred: Boolean,
     val shape: RegionShape,
+    val manual: Boolean = false,
 ) {
     fun toRegion(id: Int, width: Int, height: Int) = FaceRegion(
         id = id,
         bounds = RectF(left * width, top * height, right * width, bottom * height),
         blurred = blurred,
         shape = shape,
+        manual = manual,
     )
 }
 
@@ -79,7 +81,7 @@ class RecentStore private constructor(private val context: Context) {
             SavedRegion(
                 it.bounds.left / imageWidth, it.bounds.top / imageHeight,
                 it.bounds.right / imageWidth, it.bounds.bottom / imageHeight,
-                it.blurred, it.shape,
+                it.blurred, it.shape, it.manual,
             )
         }
         val entry = RecentEntry(id, System.currentTimeMillis(), source, effect, intensity, regions, thumb)
@@ -147,7 +149,7 @@ class RecentStore private constructor(private val context: Context) {
                         put(JSONObject().apply {
                             put("l", r.left.toDouble()); put("t", r.top.toDouble())
                             put("r", r.right.toDouble()); put("b", r.bottom.toDouble())
-                            put("blurred", r.blurred); put("shape", r.shape.name)
+                            put("blurred", r.blurred); put("shape", r.shape.name); put("manual", r.manual)
                         })
                     }
                 })
@@ -170,6 +172,7 @@ class RecentStore private constructor(private val context: Context) {
                         r.getDouble("l").toFloat(), r.getDouble("t").toFloat(),
                         r.getDouble("r").toFloat(), r.getDouble("b").toFloat(),
                         r.getBoolean("blurred"), RegionShape.valueOf(r.getString("shape")),
+                        r.optBoolean("manual", false), // older entries have no flag
                     )
                 }
             }

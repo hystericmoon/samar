@@ -66,6 +66,7 @@ import app.samar.ui.components.PillButton
 import app.samar.ui.components.SegmentedControl
 import app.samar.ui.components.GlassIconButton
 import app.samar.ui.icons.SamarIcons
+import app.samar.ui.theme.Overlay
 import app.samar.ui.theme.Samar
 import app.samar.ui.theme.SamarShapes
 import kotlin.math.roundToInt
@@ -101,7 +102,7 @@ fun AddFaceScreen(vm: EditorViewModel) {
             ) {
                 GlassIconButton(SamarIcons.Close, "Close", onClick = vm::cancelDraft)
                 Text(
-                    "Add missed face",
+                    if (vm.editingId != null) "Adjust blur area" else "Add missed face",
                     style = Samar.type.screenTitle,
                     color = c.text,
                     textAlign = TextAlign.Center,
@@ -118,7 +119,7 @@ fun AddFaceScreen(vm: EditorViewModel) {
             ) {
                 PlacementArea(vm, draft, Modifier.fillMaxSize())
                 Text(
-                    "Drag to move, pinch to resize",
+                    if (vm.editingId != null) "Drag the handles to resize" else "Drag to move, pinch to resize",
                     style = Samar.type.bodyStrong,
                     color = Color.White,
                     modifier = Modifier
@@ -156,15 +157,24 @@ fun AddFaceScreen(vm: EditorViewModel) {
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                "Use this for faces the detector missed, like profile views, masks, or faces " +
-                    "that are partly covered. It uses the same effect and intensity as the rest of the photo.",
+                if (vm.editingId != null) {
+                    "Make the blur bigger to cover hair and ears, or smaller to keep more of the photo. " +
+                        "Drag inside the shape to move it."
+                } else {
+                    "Use this for faces the detector missed, like profile views, masks, or faces " +
+                        "that are partly covered. It uses the same effect and intensity as the rest of the photo."
+                },
                 style = Samar.type.body,
                 color = c.mutedText,
             )
             Spacer(Modifier.height(28.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedPillButton("Cancel", onClick = vm::cancelDraft, modifier = Modifier.weight(1f))
-                PillButton("Add blur", onClick = vm::commitDraft, modifier = Modifier.weight(1f))
+                PillButton(
+                    if (vm.editingId != null) "Update blur" else "Add blur",
+                    onClick = vm::commitDraft,
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
     }
@@ -175,7 +185,7 @@ fun AddFaceScreen(vm: EditorViewModel) {
 private fun PlacementArea(vm: EditorViewModel, draft: FaceRegion, modifier: Modifier) {
     val base = vm.base ?: return
     val image = vm.rendered ?: base
-    val accent = Samar.colors.accent
+    val accent = Overlay.Highlight
     val density = LocalDensity.current
 
     BoxWithConstraints(modifier.clipToBounds()) {
@@ -304,17 +314,17 @@ private fun blurAreaActions(vm: EditorViewModel, step: Float): List<CustomAccess
     )
 }
 
-/** White halo + accent outline, plus four round handles (small visual, 48dp touch area). */
+/** Dark halo + neon outline, plus four neon handles with navy rims (small visual, 48dp touch area). */
 private fun DrawScope.drawShapeOutline(r: Rect, shape: RegionShape, accent: Color) {
     val halo = Stroke(5.dp.toPx())
     val line = Stroke(2.5.dp.toPx())
     when (shape) {
         RegionShape.Ellipse -> {
-            drawOval(Color.White, r.topLeft, r.size, style = halo)
+            drawOval(Color.Black.copy(alpha = 0.55f), r.topLeft, r.size, style = halo)
             drawOval(accent, r.topLeft, r.size, style = line)
         }
         RegionShape.Rectangle -> {
-            drawRect(Color.White, r.topLeft, r.size, style = halo)
+            drawRect(Color.Black.copy(alpha = 0.55f), r.topLeft, r.size, style = halo)
             drawRect(accent, r.topLeft, r.size, style = line)
         }
     }
@@ -323,7 +333,7 @@ private fun DrawScope.drawShapeOutline(r: Rect, shape: RegionShape, accent: Colo
         Offset(r.left, r.center.y), Offset(r.right, r.center.y),
         Offset(r.center.x, r.top), Offset(r.center.x, r.bottom),
     ).forEach { p ->
-        drawCircle(Color.White, handleR, p)
-        drawCircle(accent, handleR, p, style = Stroke(2.5.dp.toPx()))
+        drawCircle(accent, handleR, p)
+        drawCircle(Overlay.Ink, handleR, p, style = Stroke(2.5.dp.toPx()))
     }
 }

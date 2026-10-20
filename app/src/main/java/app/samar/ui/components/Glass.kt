@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.samar.ui.theme.Overlay
 import app.samar.ui.theme.Samar
 
 /**
@@ -33,10 +34,11 @@ import app.samar.ui.theme.Samar
  * - [Clear]: frosted glass for secondary buttons, tracks and icon buttons.
  * - [Dark]: smoky glass for controls that float over photos (eye button).
  * - [Frost]: light glass for controls over photos (face toggle "not blurred"). Fixed, not themed.
+ * - [Highlight]: neon yellow glass for controls over photos (face toggle "blurred"). Fixed, not themed.
  *
  * Drawn in code (no background blur), so it looks the same on Android 8 and 16.
  */
-enum class GlassTone { Accent, Clear, Dark, Frost }
+enum class GlassTone { Accent, Clear, Dark, Frost, Highlight }
 
 /** Content colour that keeps text and icons at 4.5:1 on each tone. */
 @Composable
@@ -45,6 +47,7 @@ fun glassContentColor(tone: GlassTone): Color = when (tone) {
     GlassTone.Clear -> Samar.colors.text
     GlassTone.Dark -> Color.White
     GlassTone.Frost -> Color(0xFF15141C)
+    GlassTone.Highlight -> Overlay.Ink
 }
 
 /**
@@ -78,16 +81,18 @@ fun Modifier.liquidGlass(
         GlassTone.Clear -> if (dark) Color.White.copy(alpha = 0.10f) else Color.White.copy(alpha = 0.62f)
         GlassTone.Dark -> Color(0xFF15141C).copy(alpha = 0.58f)
         GlassTone.Frost -> Color.White.copy(alpha = 0.80f)
+        GlassTone.Highlight -> Overlay.Highlight.copy(alpha = 0.95f)
     }
     val highlight = when (tone) {
         GlassTone.Accent -> if (dark) 0.34f else 0.26f
         GlassTone.Clear -> if (dark) 0.16f else 0.70f
         GlassTone.Dark -> 0.20f
         GlassTone.Frost -> 0.75f
+        GlassTone.Highlight -> 0.45f
     }
     val rimTop = if ((tone == GlassTone.Clear && !dark) || tone == GlassTone.Frost) 1f else 0.70f
     val shadowColor = when (tone) {
-        GlassTone.Accent -> Color(0xFF2A1B8F).copy(alpha = if (dark) 0.6f else 0.5f)
+        GlassTone.Accent, GlassTone.Highlight -> Color(0xFF12056B).copy(alpha = if (dark) 0.6f else 0.5f)
         else -> Color.Black.copy(alpha = if (dark) 0.5f else 0.18f)
     }
     val edge = c.outline

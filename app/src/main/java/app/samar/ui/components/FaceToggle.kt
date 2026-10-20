@@ -16,6 +16,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import app.samar.ui.icons.SamarIcons
+import app.samar.ui.theme.Overlay
 import app.samar.ui.theme.Samar
 import app.samar.ui.theme.SamarShapes
 
@@ -24,7 +25,7 @@ private val OverlayWhite = Color.White
 private val OverlayInk = Color(0xFF15141C)
 
 /**
- * The round badge above each face. Check on accent glass = blurred; plus on frosted glass = not blurred.
+ * The round badge above each face. Navy check on neon-yellow glass = blurred; plus on frosted glass = not blurred.
  * 36dp visual inside a 48dp touch target.
  */
 @Composable
@@ -48,14 +49,14 @@ fun FaceToggle(
         Box(
             Modifier
                 .size(36.dp)
-                .liquidGlass(SamarShapes.pill, if (blurred) GlassTone.Accent else GlassTone.Frost, elevation = 4.dp)
-                .border(1.5.dp, if (blurred) OverlayWhite else OverlayInk, SamarShapes.pill),
+                .liquidGlass(SamarShapes.pill, if (blurred) GlassTone.Highlight else GlassTone.Frost, elevation = 4.dp)
+                .border(1.5.dp, if (blurred) Overlay.Ink else OverlayInk, SamarShapes.pill),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = if (blurred) SamarIcons.Check else SamarIcons.Plus,
                 contentDescription = null,
-                tint = if (blurred) Samar.colors.textOnAccent else OverlayInk,
+                tint = if (blurred) Overlay.Ink else OverlayInk,
                 modifier = Modifier.size(20.dp),
             )
         }

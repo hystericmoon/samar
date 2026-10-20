@@ -67,6 +67,11 @@ object SamarIcons {
 
     val EyeOff: ImageVector by lazy { lineIcon("EyeOff", EYE, PUPIL, "M3,3l18,18") }
 
+    // Four corner brackets: the face boxes. With a slash: boxes hidden (preview).
+    private val FRAME = arrayOf("M4,9V5h4", "M16,5h4v4", "M20,15v4h-4", "M8,19H4v-4")
+    val Frame: ImageVector by lazy { lineIcon("Frame", *FRAME) }
+    val FrameOff: ImageVector by lazy { lineIcon("FrameOff", *FRAME, "M3,3l18,18") }
+
     private fun lineIcon(name: String, vararg paths: String): ImageVector =
         ImageVector.Builder(
             name = name,

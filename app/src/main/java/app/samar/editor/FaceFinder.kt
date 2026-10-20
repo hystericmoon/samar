@@ -18,6 +18,8 @@ data class FaceRegion(
     val bounds: RectF,
     val blurred: Boolean = true,
     val shape: RegionShape = RegionShape.Ellipse,
+    /** Placed by the user with Add missed face (not found by the detector). */
+    val manual: Boolean = false,
 )
 
 object FaceFinder {

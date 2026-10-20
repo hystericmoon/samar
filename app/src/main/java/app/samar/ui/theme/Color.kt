@@ -26,8 +26,8 @@ val LightColors = SamarColors(
     mutedText = Color(0xFF55536A),
     outline = Color(0xFF8C89A3),
     divider = Color(0xFFDEDCE8),
-    accent = Color(0xFF5B3FF5),       // Ultraviolet
-    accentTint = Color(0xFFE7E2FF),   // Haze
+    accent = Color(0xFF1F06AC),       // Navy
+    accentTint = Color(0xFFE4E1F7),   // Haze (navy tint)
     textOnAccent = Color(0xFFFFFFFF),
     isDark = false,
 )
@@ -39,11 +39,21 @@ val DarkColors = SamarColors(
     mutedText = Color(0xFFA9A6BF),
     outline = Color(0xFF6F6C86),
     divider = Color(0xFF2C2A38),
-    accent = Color(0xFFA596FF),       // Lilac
-    accentTint = Color(0xFF2D2850),   // Dusk
-    textOnAccent = Color(0xFF14121F),
+    accent = Color(0xFF5882E8),       // Cornflower
+    accentTint = Color(0xFF1E2550),   // Dusk (blue)
+    textOnAccent = Color(0xFF0B0A24),
     isDark = true,
 )
+
+/**
+ * Controls drawn over photos (face boxes, face toggles, the blur-area shape, the Home hero badge).
+ * Fixed in both themes: neon yellow reads on almost any photo, with navy marks and a dark halo
+ * so it still holds 3:1 on light photos.
+ */
+object Overlay {
+    val Highlight = Color(0xFFE3EF4F)   // Neon
+    val Ink = Color(0xFF1F06AC)         // Navy
+}
 
 /** Photo placeholder colours (previews and empty states only; never theme-tinted). */
 object PhotoPlaceholder {
