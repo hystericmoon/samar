@@ -133,8 +133,6 @@ fun HomeScreen(
             Spacer(Modifier.height(8.dp))
             Text("Everything stays on your phone.", style = Samar.type.body, color = c.mutedText)
             Spacer(Modifier.height(20.dp))
-            ModePills(selectionMode, onSelectionModeChange)
-            Spacer(Modifier.height(14.dp))
             StartCard(selectionMode)
             Spacer(Modifier.height(14.dp))
             PillButton(text = "Choose photo", icon = SamarIcons.Photo, onClick = onChoosePhoto)
@@ -146,7 +144,7 @@ fun HomeScreen(
     }
 }
 
-/** Glass pill with the logo (white mark on a navy disc) and the wordmark. */
+/** Glass pill with the logo (neon mark on a navy disc) and the wordmark. */
 @Composable
 private fun LogoChip() {
     Row(
@@ -161,10 +159,10 @@ private fun LogoChip() {
         Box(
             Modifier
                 .size(32.dp)
-                .background(Brush.linearGradient(listOf(Color(0xFF0F42C0), Color(0xFF1F06AC))), SamarShapes.pill),
+                .background(Overlay.Ink, SamarShapes.pill),
             contentAlignment = Alignment.Center,
         ) {
-            SamarLogoMark(size = 20.dp, color = Color.White)
+            SamarLogoMark(size = 20.dp, color = Overlay.Highlight)
         }
         Text("samar", style = Samar.type.buttonSmall, color = Samar.colors.text)
     }
@@ -191,39 +189,6 @@ private fun GlassCircle(icon: ImageVector, label: String, onClick: () -> Unit, t
             contentAlignment = Alignment.Center,
         ) {
             Icon(icon, contentDescription = null, tint = Samar.colors.text, modifier = Modifier.size(20.dp))
-        }
-    }
-}
-
-/** Auto / Manual as two pills: the selected one is solid (white in dark, navy in light). */
-@Composable
-private fun ModePills(mode: SelectionMode, onChange: (SelectionMode) -> Unit) {
-    val c = Samar.colors
-    Row(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        SelectionMode.entries.forEach { m ->
-            val on = m == mode
-            val fill = if (c.isDark) Color.White else Color(0xFF1F06AC)
-            Box(
-                Modifier
-                    .heightIn(min = 48.dp)
-                    .selectable(on, role = Role.RadioButton) { onChange(m) },
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(
-                    Modifier
-                        .then(
-                            if (on) Modifier.background(fill, SamarShapes.pill)
-                            else Modifier.glassCard(SamarShapes.pill),
-                        )
-                        .padding(horizontal = 18.dp, vertical = 9.dp),
-                ) {
-                    Text(
-                        m.name,
-                        style = Samar.type.label,
-                        color = if (on) (if (c.isDark) Color(0xFF0B0D33) else Color.White) else c.text,
-                    )
-                }
-            }
         }
     }
 }

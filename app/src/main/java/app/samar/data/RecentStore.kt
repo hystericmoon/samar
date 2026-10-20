@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import app.samar.editor.FaceRegion
 import app.samar.editor.RegionShape
 import app.samar.effects.Effect
+import app.samar.effects.EffectRenderer
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -43,6 +44,7 @@ data class RecentEntry(
     val intensity: Float,
     val regions: List<SavedRegion>,
     val thumbnail: File,
+    val solidColor: Int = EffectRenderer.SOLID_FILL,
 )
 
 /**
@@ -67,6 +69,7 @@ class RecentStore private constructor(private val context: Context) {
         source: Uri,
         effect: Effect,
         intensity: Float,
+        solidColor: Int,
         faces: List<FaceRegion>,
         imageWidth: Int,
         imageHeight: Int,
@@ -84,7 +87,7 @@ class RecentStore private constructor(private val context: Context) {
                 it.blurred, it.shape, it.manual,
             )
         }
-        val entry = RecentEntry(id, System.currentTimeMillis(), source, effect, intensity, regions, thumb)
+        val entry = RecentEntry(id, System.currentTimeMillis(), source, effect, intensity, regions, thumb, solidColor)
 
         val replaced = entries.filter { it.source == source }
         replaced.forEach { it.thumbnail.delete() }
@@ -143,6 +146,7 @@ class RecentStore private constructor(private val context: Context) {
                 put("source", e.source.toString())
                 put("effect", e.effect.name)
                 put("intensity", e.intensity.toDouble())
+                put("solidColor", e.solidColor)
                 put("thumbnail", e.thumbnail.name)
                 put("regions", JSONArray().apply {
                     e.regions.forEach { r ->
@@ -184,6 +188,7 @@ class RecentStore private constructor(private val context: Context) {
                 intensity = o.getDouble("intensity").toFloat(),
                 regions = regions,
                 thumbnail = thumb,
+                solidColor = o.optInt("solidColor", EffectRenderer.SOLID_FILL),
             )
         }
     }.getOrDefault(emptyList())

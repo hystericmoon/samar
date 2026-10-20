@@ -185,7 +185,8 @@ fun AddFaceScreen(vm: EditorViewModel) {
 @Composable
 private fun PlacementArea(vm: EditorViewModel, draft: FaceRegion, modifier: Modifier) {
     val base = vm.base ?: return
-    val image = vm.rendered ?: base
+    // When adjusting a face, show the photo without that face's old blur.
+    val image = if (vm.editingId != null) vm.adjustBackdrop ?: base else vm.rendered ?: base
     val accent = Overlay.Highlight
     val density = LocalDensity.current
 

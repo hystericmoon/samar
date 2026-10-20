@@ -1,5 +1,10 @@
 package app.samar.ui.editor
 
+import app.samar.ui.components.glassHairline
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.selectable
+import app.samar.effects.EffectRenderer
 import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -433,14 +438,18 @@ private fun EditorSheet(
             )
         }
         Spacer(Modifier.height(16.dp))
-        IntensitySlider(
-            value = vm.intensity,
-            onChange = vm::changeIntensity,
-            onChangeFinished = vm::finishIntensityChange,
-            enabled = vm.effect.usesIntensity,
-            disabledNote = "Always full",
-            modifier = Modifier.padding(horizontal = 24.dp),
-        )
+        if (vm.effect == Effect.Solid) {
+            SolidColorRow(vm.solidColor, vm::selectSolidColor, Modifier.padding(horizontal = 24.dp))
+        } else {
+            IntensitySlider(
+                value = vm.intensity,
+                onChange = vm::changeIntensity,
+                onChangeFinished = vm::finishIntensityChange,
+                enabled = vm.effect.usesIntensity,
+                disabledNote = "Always full",
+                modifier = Modifier.padding(horizontal = 24.dp),
+            )
+        }
         Spacer(Modifier.height(12.dp))
         PillButton(text = "Export", onClick = onExport, modifier = Modifier.padding(horizontal = 24.dp))
     }
@@ -464,5 +473,48 @@ private fun SelectionModeRow(mode: SelectionMode, onChange: (SelectionMode) -> U
             height = 48.dp,
             modifier = Modifier.width(190.dp),
         )
+    }
+}
+
+/** Solid replaces the intensity slider with a choice of fill colours (always fully opaque). */
+@Composable
+private fun SolidColorRow(selected: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {
+    val c = Samar.colors
+    Column(modifier) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text("Colour", style = Samar.type.buttonSmall, color = c.text, modifier = Modifier.weight(1f))
+            Text("Always full", style = Samar.type.label, color = c.mutedText)
+        }
+        Row(
+            Modifier.fillMaxWidth().selectableGroup(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            EffectRenderer.SOLID_COLORS.forEach { (name, argb) ->
+                val on = argb == selected
+                Box(
+                    Modifier
+                        .size(48.dp)
+                        .selectable(on, role = Role.RadioButton) { onSelect(argb) }
+                        .semantics { contentDescription = name },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    // Ring in the emphasis colour marks the choice; a check too, so it's not colour alone.
+                    Box(
+                        Modifier
+                            .size(if (on) 38.dp else 32.dp)
+                            .border(if (on) 2.5.dp else 0.dp, if (on) c.emphasis else Color.Transparent, SamarShapes.pill)
+                            .padding(if (on) 4.dp else 0.dp)
+                            .background(Color(argb), SamarShapes.pill)
+                            .border(1.dp, glassHairline(), SamarShapes.pill),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (on) {
+                            val light = Color(argb).luminance() > 0.5f
+                            Icon(SamarIcons.Check, null, tint = if (light) Color(0xFF15141C) else Color.White, modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+            }
+        }
     }
 }

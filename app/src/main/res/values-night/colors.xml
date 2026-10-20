@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dark icon variant: Cornflower mark on Night (used by launchers that follow dark mode) -->
-    <color name="icon_background">#121118</color>
-    <color name="icon_mark">#5882E8</color>
+    <!-- Dark icon variant: same as light, Neon mark on Navy -->
+    <color name="icon_background">#1F06AC</color>
+    <color name="icon_mark">#E3EF4F</color>
     <color name="window_background">#090B2A</color>
 </resources>

@@ -30,13 +30,13 @@ import kotlin.math.roundToInt
  */
 object EffectRenderer {
 
-    suspend fun render(base: Bitmap, regions: List<FaceRegion>, effect: Effect, intensity: Float): Bitmap {
+    suspend fun render(base: Bitmap, regions: List<FaceRegion>, effect: Effect, intensity: Float, solidColor: Int = SOLID_FILL): Bitmap {
         val out = base.copy(Bitmap.Config.ARGB_8888, true)
         val canvas = Canvas(out)
         for (region in regions) {
             if (!region.blurred) continue
             currentCoroutineContext().ensureActive() // stop early if the slider moved again
-            drawEffect(base, canvas, region, effect, intensity)
+            drawEffect(base, canvas, region, effect, intensity, solidColor)
         }
         return out
     }
@@ -45,12 +45,12 @@ object EffectRenderer {
      * Export version: draws onto [photo] itself (it must be mutable), so a large photo
      * is not held in memory twice. Each effect copies its crop before drawing over it.
      */
-    suspend fun renderInPlace(photo: Bitmap, regions: List<FaceRegion>, effect: Effect, intensity: Float) {
+    suspend fun renderInPlace(photo: Bitmap, regions: List<FaceRegion>, effect: Effect, intensity: Float, solidColor: Int = SOLID_FILL) {
         val canvas = Canvas(photo)
         for (region in regions) {
             if (!region.blurred) continue
             currentCoroutineContext().ensureActive()
-            drawEffect(photo, canvas, region, effect, intensity)
+            drawEffect(photo, canvas, region, effect, intensity, solidColor)
         }
     }
 
@@ -58,7 +58,7 @@ object EffectRenderer {
      * Renders just one region into a small transparent bitmap (for the live preview while
      * placing a missed face), including its soft edge. Returns the patch and its top-left in photo px.
      */
-    fun renderPatch(base: Bitmap, region: FaceRegion, effect: Effect, intensity: Float): Pair<Bitmap, android.graphics.Point> {
+    fun renderPatch(base: Bitmap, region: FaceRegion, effect: Effect, intensity: Float, solidColor: Int = SOLID_FILL): Pair<Bitmap, android.graphics.Point> {
         val area = if (effect == Effect.Smear) {
             RectF(HeadSmear.Params(region, intensity, base.width, base.height).patch)
         } else {
@@ -70,7 +70,7 @@ object EffectRenderer {
         val patch = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(patch)
         canvas.translate(-o.x.toFloat(), -o.y.toFloat())
-        drawEffect(base, canvas, region, effect, intensity)
+        drawEffect(base, canvas, region, effect, intensity, solidColor)
         return patch to o
     }
 
@@ -86,7 +86,7 @@ object EffectRenderer {
      * Draws the effect over the area plus a ring around it, then fades that ring out with a
      * soft mask. Inside the area the effect stays fully opaque, so the face is never less covered.
      */
-    private fun drawEffect(base: Bitmap, canvas: Canvas, region: FaceRegion, effect: Effect, intensity: Float) {
+    private fun drawEffect(base: Bitmap, canvas: Canvas, region: FaceRegion, effect: Effect, intensity: Float, solidColor: Int) {
         if (effect == Effect.Smear) {
             // Smear draws its own soft, streaky edge (its tails run further than the other effects' fade).
             val gpu = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !forceSmearFallback
@@ -115,7 +115,7 @@ object EffectRenderer {
             Effect.Glass -> glass(base, pc, area, intensity)
             Effect.Smear -> Unit // drawn above
             Effect.Pixelate -> pixelate(base, pc, area, intensity)
-            Effect.Solid -> solid(pc, area)
+            Effect.Solid -> solid(pc, area, solidColor)
         }
 
         // 2. Mask: the shape blurred outwards, plus the sharp shape on top so the inside is solid.
@@ -206,8 +206,8 @@ object EffectRenderer {
     }
 
     /** Flat dark fill. Always fully opaque: intensity does not apply. */
-    private fun solid(canvas: Canvas, area: Area) {
-        drawShape(canvas, area, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = SOLID_FILL })
+    private fun solid(canvas: Canvas, area: Area, fill: Int) {
+        drawShape(canvas, area, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = fill })
     }
 
     /** Debug switch to check the older-phone Smear on a new phone. Always false in the app. */
@@ -234,7 +234,17 @@ object EffectRenderer {
             })
         }
 
-    private val SOLID_FILL = Color.rgb(0x22, 0x25, 0x2B)
+    /** Default Solid colour (charcoal). The editor offers a few more: see [SOLID_COLORS]. */
+    val SOLID_FILL = Color.rgb(0x22, 0x25, 0x2B)
+
+    /** Solid colours the user can pick, with names for TalkBack. Always fully opaque. */
+    val SOLID_COLORS = listOf(
+        "Charcoal" to SOLID_FILL,
+        "Black" to Color.rgb(0, 0, 0),
+        "White" to Color.rgb(0xFF, 0xFF, 0xFF),
+        "Navy" to Color.rgb(0x1F, 0x06, 0xAC),
+        "Neon" to Color.rgb(0xE3, 0xEF, 0x4F),
+    )
 
     private fun drawShape(canvas: Canvas, area: Area, paint: Paint) = drawShape(canvas, area.shape, area.bounds, paint)
 

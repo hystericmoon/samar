@@ -34,7 +34,7 @@ Notes:
 - Rotate the image by its EXIF orientation before detection, or boxes will be misaligned on portrait photos.
 - Use a downscaled copy for the live preview (1600px long edge). Run the full-resolution pass only on export.
 - Strength scales with each face's size, so the saved photo looks the same as the preview.
-- Solid is always a full, opaque cover. When Solid is selected, the slider is dimmed and reads "Always full".
+- Solid is always a full, opaque cover. When Solid is selected, the intensity slider is replaced by a Colour row ("Always full"): Charcoal #22252B (default), Black, White, Navy #1F06AC, Neon #E3EF4F. 48dp targets, the chosen one gets an emphasis ring and a check. Saved with the photo in Recent and undoable.
 - Smear note text: "Smear is a stylistic effect. Solid or Pixelate hide identity more reliably."
 
 ## Screens
@@ -61,7 +61,7 @@ Notes:
 - Photo preview. Each detected face has a box and a toggle (check = blurred, plus = not blurred). Tap to switch.
 - An eye button on the photo shows the original when tapped (tap to toggle, not press-and-hold). It is a dark circle with a faint light ring, so it shows on any background.
 - Zoom: pinch or double-tap (up to 3x), and drag to pan while zoomed. Face boxes follow the zoom, but toggles stay full size (48dp targets). Zoom is kept while editing and resets only for a new photo.
-- Tapping the face box opens it in the placement screen ("Adjust blur area", button "Update blur") to make that blur bigger or smaller, move it, or switch Ellipse/Rectangle. Updating also turns its blur on. TalkBack: the toggle has an "Adjust blur area" action.
+- Tapping the face box opens it in the placement screen ("Adjust blur area", button "Update blur") to make that blur bigger or smaller, move it, or switch Ellipse/Rectangle. Updating also turns its blur on. While adjusting, the photo behind the shape is shown without that face's old blur. TalkBack: the toggle has an "Adjust blur area" action.
 - A Preview button (corner-brackets icon, glass, next to the eye) hides all boxes and toggles to show the clean result; tap again to bring them back.
 - Face boxes use 14dp corners, at most a quarter of the box size, so small faces still read as boxes.
 - Bottom sheet (28dp top corners):
@@ -150,7 +150,7 @@ Sizes used: wordmark 26, hero headline 34, screen titles 19, section headings 18
 - Panels (`glassCard`): frosted glass (white 6% in dark, 72% in light), soft top rim, 1dp hairline edge. Sheets (`glassSheet`) are translucent navy (dark) / milky white (light).
 - Main buttons: cornflower → navy gradient glass, white text, soft glow.
 - `emphasis` colour for numbers and the selected swatch: Neon #E3EF4F in dark, Navy #1F06AC in light.
-- Home: logo chip (white mark on a navy disc + "samar") on the left; round glass Theme (sun/moon) and About (ⓘ) buttons on the right. Hero animation 150dp, headline left-aligned, Auto / Manual pills, a "Start with" card that follows the mode, Choose photo, then Recent: the latest save as a neon card ("3 faces hidden"), then up to three thumbnails.
+- Home: logo chip (Neon mark on a Navy disc + "samar") on the left; round glass Theme (sun/moon) and About (ⓘ) buttons on the right. Hero animation 150dp, headline left-aligned, a "Start with" card that follows the editor's Auto / Manual choice (the switch itself lives only in the editor), Choose photo, then Recent: the latest save as a neon card ("3 faces hidden"), then up to three thumbnails.
 - Editor: title in a glass pill with the file name above it; effect swatches are 56dp rounded squares (18dp corners) with a glowing ring.
 - Export: Before / After at the top, settings in a glass card, and a bottom dock with "N faces hidden", Save and Share.
 
@@ -182,9 +182,9 @@ On a 64 x 64 grid, every bar has height 7.5 and corner radius 3.75:
 | 5 | 7.51 | 41.3 | 44.98 |
 | 6 | 13.75 | 50.0 | 28.5 |
 
-- App icon: white mark on #1F06AC (Navy).
+- App icon: Neon #E3EF4F mark on Navy #1F06AC.
 - Themed (monochrome) icon: the mark in a single color.
-- Dark variant: #5882E8 mark on #121118 (used by launchers that follow dark mode).
+- Dark variant: same as light (Neon on Navy).
 - In the Home top bar, the mark uses the accent color next to the wordmark.
 
 ## Accessibility

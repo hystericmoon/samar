@@ -55,6 +55,7 @@ object Exporter {
         effect: Effect,
         intensity: Float,
         options: ExportOptions,
+        solidColor: Int = EffectRenderer.SOLID_FILL,
     ): File = withContext(Dispatchers.Default) {
         val maxSide = if (options.keepOriginalResolution) ORIGINAL_MAX_SIDE else SMALL_MAX_SIDE
         val full = try {
@@ -70,7 +71,7 @@ object Exporter {
         val scaled = faces.map { f ->
             f.copy(bounds = RectF(f.bounds.left * s, f.bounds.top * s, f.bounds.right * s, f.bounds.bottom * s))
         }
-        EffectRenderer.renderInPlace(photo, scaled, effect, intensity)
+        EffectRenderer.renderInPlace(photo, scaled, effect, intensity, solidColor)
 
         val file = File(exportDir(context), "samar_${timestamp()}.jpg")
         withContext(Dispatchers.IO) {

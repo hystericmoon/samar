@@ -31,6 +31,7 @@ data class EditSnapshot(
     val faces: List<FaceRegion>,
     val effect: Effect,
     val intensity: Float,
+    val solidColor: Int,
 )
 
 private const val MIN_DRAFT = 16f
@@ -52,6 +53,10 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
     var effect by mutableStateOf(Effect.Gaussian); private set
     /** 0..1; default 70%. */
     var intensity by mutableStateOf(0.7f); private set
+    /** Fill for the Solid effect (charcoal by default). */
+    var solidColor by mutableStateOf(EffectRenderer.SOLID_FILL); private set
+    /** The photo without the face being adjusted, so its old blur doesn't show behind the shape. */
+    var adjustBackdrop: Bitmap? by mutableStateOf(null); private set
     var showOriginal by mutableStateOf(false); private set
     /** Preview: hides the face boxes and toggles so the result can be seen clean. */
     var hideOverlays by mutableStateOf(false); private set
@@ -93,6 +98,13 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         val face = faces.firstOrNull { it.id == id } ?: return
         editingId = id
         setDraftBounds(face.bounds, face.shape)
+        val b = base ?: return
+        val others = faces.filter { it.id != id }
+        val e = effect; val i = intensity; val sc = solidColor
+        viewModelScope.launch {
+            val img = withContext(Dispatchers.Default) { EffectRenderer.render(b, others, e, i, sc) }
+            if (editingId == id) adjustBackdrop = img
+        }
     }
 
     fun setDraftShape(shape: RegionShape) {
@@ -109,11 +121,11 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         val top = r.top.coerceIn(0f, b.height - h)
         val region = FaceRegion(id = editingId ?: nextId(), bounds = RectF(left, top, left + w, top + h), shape = shape)
         draft = region
-        val e = effect; val i = intensity
+        val e = effect; val i = intensity; val sc = solidColor
         draftJob?.cancel()
         draftJob = viewModelScope.launch {
             draftPatch = withContext(Dispatchers.Default) {
-                EffectRenderer.renderPatch(b, region, e, i)
+                EffectRenderer.renderPatch(b, region, e, i, sc)
             }
         }
     }
@@ -139,6 +151,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         draft = null
         draftPatch = null
         editingId = null
+        adjustBackdrop = null
     }
 
     private fun nextId() = (faces.maxOfOrNull { it.id } ?: -1) + 1
@@ -172,7 +185,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         val source = uri ?: return
         val b = base ?: return
         RecentStore.get(getApplication()).add(
-            source, effect, intensity, faces, b.width, b.height, rendered ?: b,
+            source, effect, intensity, solidColor, faces, b.width, b.height, rendered ?: b,
         )
     }
 
@@ -191,7 +204,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             exportStatus = try {
                 val file = Exporter.renderToTempFile(
-                    getApplication(), source, faces, preview.width, effect, intensity, exportOptions,
+                    getApplication(), source, faces, preview.width, effect, intensity, exportOptions, solidColor,
                 )
                 then(file)
             } catch (e: CancellationException) {
@@ -233,6 +246,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
                     faces = restore.regions.mapIndexed { i, r -> r.toRegion(i, bitmap.width, bitmap.height) }
                     effect = restore.effect
                     intensity = restore.intensity
+                    solidColor = restore.solidColor
                 } else {
                     val auto = selectionMode == SelectionMode.Auto
                     faces = FaceFinder.detect(bitmap).map { it.copy(blurred = auto) }
@@ -281,7 +295,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         val start = intensityAtDragStart ?: return
         intensityAtDragStart = null
         if (start != intensity) {
-            history.addLast(EditSnapshot(faces, effect, start))
+            history.addLast(EditSnapshot(faces, effect, start, solidColor))
             exportedSinceEdit = false
             canUndo = true
         }
@@ -289,6 +303,13 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
 
     fun toggleOriginal() {
         showOriginal = !showOriginal
+    }
+
+    fun selectSolidColor(color: Int) {
+        if (color == solidColor) return
+        remember()
+        solidColor = color
+        rerender()
     }
 
     fun togglePreview() {
@@ -309,7 +330,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
 
     fun undo() {
         val s = history.removeLastOrNull() ?: return
-        faces = s.faces; effect = s.effect; intensity = s.intensity
+        faces = s.faces; effect = s.effect; intensity = s.intensity; solidColor = s.solidColor
         canUndo = history.isNotEmpty()
         exportedSinceEdit = false
         rerender()
@@ -317,16 +338,16 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun remember() {
         exportedSinceEdit = false
-        history.addLast(EditSnapshot(faces, effect, intensity))
+        history.addLast(EditSnapshot(faces, effect, intensity, solidColor))
         canUndo = true
     }
 
     private fun rerender() {
         val b = base ?: return
-        val f = faces; val e = effect; val i = intensity
+        val f = faces; val e = effect; val i = intensity; val sc = solidColor
         renderJob?.cancel()
         renderJob = viewModelScope.launch {
-            val result = withContext(Dispatchers.Default) { EffectRenderer.render(b, f, e, i) }
+            val result = withContext(Dispatchers.Default) { EffectRenderer.render(b, f, e, i, sc) }
             rendered = result
         }
     }
@@ -335,7 +356,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
         loadJob?.cancel(); renderJob?.cancel()
         uri = null; fileName = null; loading = false; failed = false; fromRecent = false
         base = null; rendered = null; faces = emptyList()
-        effect = Effect.Gaussian; intensity = 0.7f; showOriginal = false; hideOverlays = false
+        effect = Effect.Gaussian; intensity = 0.7f; solidColor = EffectRenderer.SOLID_FILL; showOriginal = false; hideOverlays = false
         viewZoom = 1f; viewCenter = null
         history.clear(); canUndo = false; intensityAtDragStart = null
         closeDraft()
