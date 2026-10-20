@@ -1,0 +1,21 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+.kotlin/
+# Build outputs and signing (never commit keys)
+*.apk
+*.aab
+*.jks
+*.keystore
+upload.properties
+captures/
+
+# Private notes for Claude Code (not public)
+CLAUDE.md
+
+# Working images from development (test photos), kept local
+design/smear-*.png
+design/liquid-glass-preview.png

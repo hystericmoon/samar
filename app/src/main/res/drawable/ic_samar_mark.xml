@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- samar logo mark: six rounded bars on a 64x64 grid (see DESIGN_BRIEF.md "Logo").
+     Fill is black; tint it in code (accent in the Home top bar). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M19.5,6.5h21a3.75,3.75 0,0 1,0 7.5h-21a3.75,3.75 0,0 1,0 -7.5z M15.26,15.2h37.48a3.75,3.75 0,0 1,0 7.5h-37.48a3.75,3.75 0,0 1,0 -7.5z M15.12,23.9h43.76a3.75,3.75 0,0 1,0 7.5h-43.76a3.75,3.75 0,0 1,0 -7.5z M13.12,32.6h43.76a3.75,3.75 0,0 1,0 7.5h-43.76a3.75,3.75 0,0 1,0 -7.5z M11.26,41.3h37.48a3.75,3.75 0,0 1,0 7.5h-37.48a3.75,3.75 0,0 1,0 -7.5z M17.5,50h21a3.75,3.75 0,0 1,0 7.5h-21a3.75,3.75 0,0 1,0 -7.5z" />
+</vector>

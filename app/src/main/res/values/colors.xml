@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App icon: white mark on Ultraviolet -->
+    <color name="icon_background">#5B3FF5</color>
+    <color name="icon_mark">#FFFFFF</color>
+    <!-- Window background before Compose draws (avoids a flash) -->
+    <color name="window_background">#F2F2F6</color>
+</resources>
