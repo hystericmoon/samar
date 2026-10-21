@@ -22,6 +22,8 @@ Everything stays on your phone.
 
 https://github.com/user-attachments/assets/f906472c-0703-4918-8402-f40d56a0afd8
 
+<sub>1-minute demo with narration · voice by ElevenLabs</sub>
+
 
 
 </div>
