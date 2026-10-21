@@ -1,0 +1,9 @@
+samar demo video: narration script (one line per scene)
+
+0  Intro        This is samar. It hides faces in your photos, before you share them.
+1  Choose       Choose a photo. samar finds the faces right on your phone. Nothing is uploaded.
+2  Pick a look  Pick a look: Gaussian, glass, smear, or pixelate. Or cover faces with a solid colour.
+3  You decide   Tap a face to keep it visible. Or switch to Manual, and choose the faces yourself.
+4  Resize       Need more coverage? Tap a face, and drag to make its blur bigger.
+5  Save         Preview the result without the boxes. Then save. Location and camera details are removed automatically.
+6  Outro        samar. Everything stays on your phone. Free and open source, on GitHub.

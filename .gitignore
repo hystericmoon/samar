@@ -19,3 +19,7 @@ CLAUDE.md
 # Working images from development (test photos), kept local
 design/smear-*.png
 design/liquid-glass-preview.png
+
+# Demo video working files (voice takes, drafts)
+docs/video/vo*
+docs/video/*draft*

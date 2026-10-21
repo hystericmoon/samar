@@ -17,6 +17,12 @@ Everything stays on your phone.
 
 <img src="docs/readme/screens.png" alt="samar screens: Home, Edit photo, Add missed face, Export, and Home in dark mode">
 
+<br>
+
+<a href="docs/video/samar-demo.mp4"><img src="docs/video/poster.png" width="300" alt="Play the 1-minute samar demo video"></a>
+
+<sub>1-minute demo with narration · voice by ElevenLabs</sub>
+
 </div>
 
 <br>
