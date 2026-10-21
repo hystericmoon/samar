@@ -19,9 +19,10 @@ Everything stays on your phone.
 
 <br>
 
-<a href="docs/video/samar-demo.mp4"><img src="docs/video/poster.png" width="300" alt="Play the 1-minute samar demo video"></a>
 
-<sub>1-minute demo with narration · voice by ElevenLabs</sub>
+https://github.com/user-attachments/assets/f906472c-0703-4918-8402-f40d56a0afd8
+
+
 
 </div>
 
