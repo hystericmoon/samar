@@ -210,6 +210,7 @@ class EditorViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
+                Log.w("samar", "Export failed", e)
                 ExportStatus.Failed
             }
         }
