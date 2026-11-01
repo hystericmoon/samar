@@ -83,7 +83,7 @@ Saved photos appear under *Recent* on Home. Tap one to reopen it with your edits
 
 samar isn't on Google Play yet. To install it from GitHub:
 
-1. On your Android phone, open the [latest release](https://github.com/hystericmoon/samar/releases/latest) and download **`samar-1.2.apk`**.
+1. On your Android phone, open the [latest release](https://github.com/hystericmoon/samar/releases/latest) and download **`samar-1.3.apk`**.
 2. Open the downloaded file. If Android asks, allow your browser or Files app to *install unknown apps*. You can turn this off again afterwards.
 3. Tap **Install**. Google Play Protect may say it doesn't recognise the app, because it isn't from the Play Store. Choose **Install anyway**.
 
@@ -94,7 +94,7 @@ Needs Android 8.0 (Oreo) or newer. On Android 8 and 9, samar asks for storage ac
 
 <br>
 
-Each release lists the APK's SHA-256 fingerprint. On a computer, run `shasum -a 256 samar-1.2.apk` and compare.
+Each release lists the APK's SHA-256 fingerprint. On a computer, run `shasum -a 256 samar-1.3.apk` and compare.
 
 The APK is signed with this certificate (SHA-256):
 
