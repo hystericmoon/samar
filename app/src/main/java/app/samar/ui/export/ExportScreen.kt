@@ -66,6 +66,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -88,6 +89,9 @@ import app.samar.ui.theme.Samar
 import app.samar.ui.theme.SamarShapes
 
 private enum class Compare { Before, After }
+
+/** A hidden face narrower than this on screen gets the zoom hint. */
+private val SMALL_FACE = 56.dp
 
 /**
  * @param onDone back to Home. Asks first if the current edits were never saved or shared.
@@ -171,6 +175,8 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
             // Zoom is shared by Before and After, so switching compares the same spot.
             var zoom by remember { mutableFloatStateOf(1f) }
             var center by remember { mutableStateOf<Offset?>(null) }
+            // Once someone has zoomed here, they know how; the hint stays away for this visit.
+            var hasZoomed by remember { mutableStateOf(false) }
             Box(Modifier.weight(1f).fillMaxWidth().padding(vertical = 12.dp), contentAlignment = Alignment.Center) {
                 if (shown != null) {
                     ZoomablePreview(
@@ -178,7 +184,12 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
                         description = if (compare == Compare.Before) "Original photo" else "Photo with faces hidden",
                         zoom = zoom,
                         center = center,
-                        onViewportChange = { z, c -> zoom = z; center = c },
+                        smallestFaceWidth = vm.faces.filter { it.blurred }.minOfOrNull { it.bounds.width() },
+                        showHint = !hasZoomed,
+                        onViewportChange = { z, c ->
+                            zoom = z; center = c
+                            if (z > 1.01f) hasZoomed = true
+                        },
                     )
                 }
             }
@@ -274,6 +285,10 @@ fun ExportScreen(vm: EditorViewModel, onDone: () -> Unit) {
  * Pinch or double-tap to zoom (up to 3x) and drag to pan, as in the editor.
  * When zoomed, a smoky glass button in the corner zooms back out to fit.
  * TalkBack: Zoom in / Zoom out actions on the photo.
+ *
+ * When a hidden face shows smaller than [SMALL_FACE] on screen, a hint chip points to zoom,
+ * since the blur on a face that small is hard to judge at a glance.
+ * [smallestFaceWidth] is in photo pixels; null when nothing is hidden.
  */
 @Composable
 private fun ZoomablePreview(
@@ -281,6 +296,8 @@ private fun ZoomablePreview(
     description: String,
     zoom: Float,
     center: Offset?,
+    smallestFaceWidth: Float?,
+    showHint: Boolean,
     onViewportChange: (Float, Offset) -> Unit,
 ) {
     val shape = RoundedCornerShape(24.dp)
@@ -329,6 +346,24 @@ private fun ZoomablePreview(
                     },
             ) {
                 TransformedPhoto(image.asImageBitmap(), t, description)
+            }
+
+            val smallFaces = smallestFaceWidth != null &&
+                smallestFaceWidth * t.fit < with(LocalDensity.current) { SMALL_FACE.toPx() }
+            if (showHint && !zoomed && smallFaces) {
+                Text(
+                    "Pinch to check small faces",
+                    style = Samar.type.label,
+                    color = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(12.dp)
+                        // Same smoky glass and light ring as the photo buttons: readable on any photo.
+                        .liquidGlass(SamarShapes.pill, GlassTone.Dark, elevation = 4.dp)
+                        .border(1.dp, Color.White.copy(alpha = 0.4f), SamarShapes.pill)
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                        .semantics { contentDescription = "Some faces are small. Use the Zoom in action to check them." },
+                )
             }
 
             if (zoomed) {

@@ -94,6 +94,7 @@ Notes:
 - Zoom on the preview, same as the editor: pinch or double-tap (up to 3x), drag to pan. Before and After share the zoom, so switching compares the same spot. Leaving Export resets it.
   - When zoomed, a 48dp smoky glass button in the photo's bottom-right corner ("Zoom out to fit") goes back to the whole photo.
   - TalkBack: the photo has Zoom in and Zoom out to fit actions.
+  - Hint, only when needed: if a hidden face shows narrower than 56dp in the preview, a smoky glass chip in the photo's bottom-left says "Pinch to check small faces". It goes away while zoomed and for the rest of the visit once the person has zoomed. TalkBack reads "Some faces are small. Use the Zoom in action to check them."
 - Two switches:
   - "Remove location and camera info" (on by default). Strip EXIF and GPS from the saved copy.
   - "Keep original resolution" (on by default).
