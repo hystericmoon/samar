@@ -24,8 +24,9 @@ are the only memory. The container can also be recycled while idle.
   and whether the latest release matches `versionName` on `main`. Finish or report any leftover
   before starting new work.
 - **End of every task:** nothing may exist only in this container. Everything is merged to `main`
-  (or the PR is open and named in the report), the release is published, docs are current, and
-  scratch branches are deleted. Anything learned that a future session needs goes into this file.
+  (or the PR is open and named in the report), the release is published, and docs are current.
+  Merged branches stay on GitHub (deleting branches and changing repo settings are blocked from
+  cloud sessions); that's fine. Anything learned that a future session needs goes into this file.
 
 ## Definition of done for every feature or fix
 
