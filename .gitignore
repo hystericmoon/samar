@@ -14,7 +14,7 @@ upload.properties
 captures/
 
 # Private notes for Claude Code (not public)
-CLAUDE.md
+/CLAUDE.md
 
 # Working images from development (test photos), kept local
 design/smear-*.png
