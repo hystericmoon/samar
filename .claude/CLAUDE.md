@@ -14,6 +14,19 @@ Read `DESIGN_BRIEF.md` (source of truth for look and behaviour) before changing 
   choice, show it visually (a page with the options drawn as UI, the recommendation marked) per the
   owner's preferences, then continue once they pick.
 
+## Session model
+
+The owner uses one long-lived session and runs `/clear` between tasks, so this file and the repo
+are the only memory. The container can also be recycled while idle.
+
+- **Start of every task:** `cd /home/user/samar` (clone it if missing), `git checkout main`,
+  `git pull origin main`, then check for leftovers: open PRs, failed or in-progress Release runs,
+  and whether the latest release matches `versionName` on `main`. Finish or report any leftover
+  before starting new work.
+- **End of every task:** nothing may exist only in this container. Everything is merged to `main`
+  (or the PR is open and named in the report), the release is published, docs are current, and
+  scratch branches are deleted. Anything learned that a future session needs goes into this file.
+
 ## Definition of done for every feature or fix
 
 1. Branch from `main`, implement, keep code style and the design system (`ui/components`, `Glass.kt`,
