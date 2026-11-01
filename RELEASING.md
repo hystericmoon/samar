@@ -10,6 +10,7 @@ Releases are built, signed and published by the **Release** workflow on GitHub. 
    - Update the APK name in `README.md` (`samar-<version>.apk`).
 2. On GitHub (web or the mobile app): **Actions → Release → Run workflow**, branch `main`, enter the version (e.g. `1.4`).
    Tick *draft* if you want to look it over before users are offered it.
+   Tick *test only* to build, sign and check without publishing anything (useful after changing the key setup).
 
 The workflow stops without publishing if:
 
