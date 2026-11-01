@@ -74,6 +74,11 @@ object SamarIcons {
     val Frame: ImageVector by lazy { lineIcon("Frame", *FRAME) }
     val FrameOff: ImageVector by lazy { lineIcon("FrameOff", *FRAME, "M3,3l18,18") }
 
+    // Magnifier with a minus: zoom back out to fit.
+    val ZoomOut: ImageVector by lazy {
+        lineIcon("ZoomOut", "M11,4a7,7 0,1 0,0.01 0z", "M21,21l-4.35,-4.35", "M8,11h6")
+    }
+
     private fun lineIcon(name: String, vararg paths: String): ImageVector =
         ImageVector.Builder(
             name = name,
