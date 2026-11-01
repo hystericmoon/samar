@@ -91,6 +91,9 @@ Notes:
 ### 4. Export
 
 - Result preview with a Before / After toggle.
+- Zoom on the preview, same as the editor: pinch or double-tap (up to 3x), drag to pan. Before and After share the zoom, so switching compares the same spot. Leaving Export resets it.
+  - When zoomed, a 48dp smoky glass button in the photo's bottom-right corner ("Zoom out to fit") goes back to the whole photo.
+  - TalkBack: the photo has Zoom in and Zoom out to fit actions.
 - Two switches:
   - "Remove location and camera info" (on by default). Strip EXIF and GPS from the saved copy.
   - "Keep original resolution" (on by default).
