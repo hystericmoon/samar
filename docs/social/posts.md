@@ -1,6 +1,8 @@
 # samar launch posts
 
 Site: https://hystericmoon.github.io/samar/ · Download: https://github.com/hystericmoon/samar/releases/latest
+Video: `docs/video/samar-demo-4x5.mp4` (1080x1350, 4:5, best for LinkedIn and Instagram feeds), `docs/video/samar-demo.mp4` (1080x1920, 9:16, for Stories/Reels/Shorts/TikTok).
+Video thumbnail: `thumbnail-vertical.png` (1080x1920, headline + phone; use it with the 9:16 video, or as a Story cover).
 Images: `cover.png` (1200x630 @2x, LinkedIn / X / Facebook link cards), `square.png` (1080x1080 @2x, Instagram / Threads / carousel first slide).
 
 ## LinkedIn
@@ -22,7 +24,7 @@ Try it, and tell me what you'd change: https://hystericmoon.github.io/samar/
 
 #Android #Privacy #ProductDesign #OpenSource #JetpackCompose
 
-(Attach either `docs/video/samar-demo.mp4` (native upload, 1080x1920, 59 s) or `cover.png`.
+(Attach `docs/video/samar-demo-4x5.mp4` (native upload, 59 s) or `cover.png`.
 With the video, many people prefer the link in the first comment instead of the post body. Videos autoplay muted: the on-screen step titles carry the message without sound.)
 
 ## X / Threads / Bluesky (short)
