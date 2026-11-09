@@ -11,7 +11,7 @@ Everything stays on your phone.
 
 <br>
 
-[**Download for Android**](https://github.com/hystericmoon/samar/releases/latest) &nbsp;·&nbsp; Android 8.0 or newer &nbsp;·&nbsp; Photos never leave your phone
+[**Download for Android**](https://github.com/hystericmoon/samar/releases/latest) &nbsp;·&nbsp; [Website](https://hystericmoon.github.io/samar/) &nbsp;·&nbsp; Android 8.0 or newer &nbsp;·&nbsp; Photos never leave your phone
 
 <br>
 

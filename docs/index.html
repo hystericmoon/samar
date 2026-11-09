@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>samar: blur faces before you share</title>
+<meta name="description" content="samar is a free Android app that finds faces in your photos and blurs them, entirely on your phone. No accounts, no uploads, no tracking.">
+<meta name="theme-color" content="#1F06AC">
+<link rel="canonical" href="https://hystericmoon.github.io/samar/">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="samar: blur faces before you share">
+<meta property="og:description" content="Free Android app. Finds faces and blurs them, fully on your phone. No accounts, no uploads, no tracking.">
+<meta property="og:url" content="https://hystericmoon.github.io/samar/">
+<meta property="og:image" content="https://hystericmoon.github.io/samar/assets/cover.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt" content="samar: blur faces before you share. Everything stays on your phone.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hystericmoon.github.io/samar/assets/cover.png">
+<style>
+@font-face{font-family:"Bricolage Grotesque";font-weight:600;src:url(assets/fonts/bricolage_semibold.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";font-weight:700;src:url(assets/fonts/bricolage_bold.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";font-weight:800;src:url(assets/fonts/bricolage_extrabold.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Instrument Sans";font-weight:500;src:url(assets/fonts/instrument_sans_medium.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Instrument Sans";font-weight:600;src:url(assets/fonts/instrument_sans_semibold.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Instrument Sans";font-weight:700;src:url(assets/fonts/instrument_sans_bold.ttf) format("truetype");font-display:swap}
+
+:root{
+  --navy:#1F06AC;--royal:#0F42C0;--corn:#5882E8;--neon:#E3EF4F;
+  --bg1:#F4F6FD;--bg2:#E9EDF9;--surface:rgba(255,255,255,.72);--edge:rgba(31,6,172,.14);
+  --text:#15141C;--muted:#55536A;--accent:#1F06AC;--on-accent:#fff;--emph:#1F06AC;--tint:#E4E1F7;
+  --glow:rgba(88,130,232,.35);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg1:#0E1240;--bg2:#090B2A;--surface:rgba(255,255,255,.06);--edge:rgba(255,255,255,.14);
+  --text:#F3F2F8;--muted:#B4B1CB;--accent:#5882E8;--on-accent:#0B0A24;--emph:#E3EF4F;--tint:#1E2550;
+  --glow:rgba(88,130,232,.28);
+}}
+:root[data-theme=dark]{
+  --bg1:#0E1240;--bg2:#090B2A;--surface:rgba(255,255,255,.06);--edge:rgba(255,255,255,.14);
+  --text:#F3F2F8;--muted:#B4B1CB;--accent:#5882E8;--on-accent:#0B0A24;--emph:#E3EF4F;--tint:#1E2550;
+  --glow:rgba(88,130,232,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg2)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;font:500 17px/1.55 "Instrument Sans",system-ui,sans-serif;color:var(--text);
+  background:radial-gradient(900px 600px at 0% -5%,var(--glow),transparent 70%),linear-gradient(var(--bg1),var(--bg2));
+  background-color:var(--bg2);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.025em;line-height:1.05;margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--emph);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:var(--on-accent);padding:10px 16px;border-radius:99px;z-index:9}
+.skip:focus{left:8px}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font:800 24px "Bricolage Grotesque";letter-spacing:-.03em}
+.logo img{width:36px;height:36px;border-radius:11px}
+nav{display:flex;gap:6px;align-items:center}
+nav a{text-decoration:none;font-weight:600;font-size:15px;padding:12px 14px;border-radius:99px;color:var(--muted)}
+nav a:hover{color:var(--text);background:var(--surface)}
+@media (max-width:640px){nav a.hide-s{display:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 28px;border-radius:99px;
+  font:700 17px "Instrument Sans";text-decoration:none;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.965)}
+.btn.primary{color:#fff;background:linear-gradient(135deg,#5882E8,#1F06AC);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(255,255,255,.12),0 10px 30px rgba(31,6,172,.35)}
+.btn.ghost{background:var(--surface);border:1px solid var(--edge);backdrop-filter:blur(10px)}
+.btn:hover{box-shadow:0 12px 34px rgba(31,6,172,.45)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:40px 0 70px}
+.eyebrow{display:inline-block;font:600 14px "Instrument Sans";padding:6px 14px;border-radius:99px;background:var(--surface);border:1px solid var(--edge);color:var(--muted);margin-bottom:22px}
+.eyebrow b{color:var(--emph)}
+h1{font-size:clamp(44px,7vw,80px);font-weight:800}
+h1 span{color:var(--accent)}
+.lead{font-size:clamp(18px,2.2vw,22px);color:var(--muted);margin:22px 0 32px;max-width:30em}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.fine{font-size:14px;color:var(--muted);margin-top:16px}
+.phones{position:relative;height:600px}
+.phones img{position:absolute;height:auto;width:min(40%,240px);border-radius:30px;box-shadow:0 30px 60px rgba(8,6,60,.35),0 0 0 1px var(--edge)}
+.phones .p1{left:0;top:60px;transform:rotate(-4deg)}
+.phones .p2{left:30%;top:0;z-index:2}
+.phones .p3{left:60%;top:80px;transform:rotate(4deg)}
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding-bottom:40px}
+  .phones{height:440px;overflow:hidden}
+  .phones img{width:min(34%,190px)}
+}
+
+/* sections */
+section{padding:56px 0}
+.kicker{font:700 13px "Instrument Sans";letter-spacing:.12em;text-transform:uppercase;color:var(--emph);margin-bottom:12px}
+h2{font-size:clamp(32px,4.5vw,52px);font-weight:800;max-width:16em}
+.sub{color:var(--muted);max-width:36em;margin:16px 0 0}
+.card{background:var(--surface);border:1px solid var(--edge);border-radius:28px;backdrop-filter:blur(12px)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+.grid .card{padding:26px}
+.grid h3{font-size:22px;margin:14px 0 8px;letter-spacing:-.02em}
+.grid p{margin:0;color:var(--muted);font-size:16px}
+.ico{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:var(--tint);font-size:24px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+.effects{margin-top:34px;padding:14px;overflow:hidden}
+.effects img{display:block;width:100%;height:auto;border-radius:18px}
+.note{margin-top:14px;font-size:15px;color:var(--muted)}
+
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px;padding:0;list-style:none}
+.steps li{counter-increment:s;padding:26px}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--neon);color:#1F06AC;font:800 20px "Bricolage Grotesque";margin-bottom:14px}
+.steps h3{font-size:22px;margin-bottom:6px}
+.steps p{margin:0;color:var(--muted);font-size:16px}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+
+.video{margin-top:34px;padding:12px}
+.video video{display:block;width:100%;border-radius:20px;background:#090B2A;max-height:640px}
+
+.privacy{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
+.privacy .card{padding:28px}
+.privacy h3{font-size:24px;margin-bottom:12px}
+.privacy ul{margin:0;padding-left:1.1em;color:var(--muted)}
+.privacy li{margin:8px 0}
+.privacy li::marker{color:var(--emph)}
+@media (max-width:860px){.privacy{grid-template-columns:1fr}}
+
+.install{padding:36px;margin-top:36px;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center}
+.install ol{margin:18px 0 0;padding-left:1.2em;color:var(--muted)}
+.install li{margin:8px 0}
+.install li b{color:var(--text)}
+.install .side{text-align:center}
+.install .side img{width:96px;border-radius:26px;box-shadow:0 14px 34px rgba(31,6,172,.4)}
+.install .side p{color:var(--muted);font-size:15px}
+@media (max-width:860px){.install{grid-template-columns:1fr;padding:26px}}
+
+footer{padding:40px 0 60px;color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;border-top:1px solid var(--edge);margin-top:30px}
+footer a{padding:10px 0;display:inline-block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header>
+    <a class="logo" href="./" aria-label="samar home"><img src="assets/icon.svg" alt="">samar</a>
+    <nav aria-label="Main">
+      <a class="hide-s" href="#how">How it works</a>
+      <a class="hide-s" href="#privacy">Privacy</a>
+      <a href="https://github.com/hystericmoon/samar">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div class="hero">
+      <div>
+        <span class="eyebrow"><b>Free</b> · Android 8.0+ · open source</span>
+        <h1>Blur faces <span>before you share.</span></h1>
+        <p class="lead">Everything stays on your phone. samar finds the faces in a photo, hides them and saves a clean copy. No accounts, no uploads, no tracking.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/hystericmoon/samar/releases/latest">Download for Android</a>
+          <a class="btn ghost" href="#how">See how it works</a>
+        </div>
+        <p class="fine"><i>samar</i> (Indonesian): faint, indistinct, hard to make out.</p>
+      </div>
+      <div class="phones" role="img" aria-label="Three samar screens: Home, the editor with faces blurred, and Export in dark mode">
+        <img class="p1" src="assets/screens/home.png" alt="" width="360" height="738">
+        <img class="p2" src="assets/screens/editor.png" alt="" width="360" height="738">
+        <img class="p3" src="assets/screens/home-dark.png" alt="" width="361" height="738">
+      </div>
+    </div>
+
+    <section id="features" aria-labelledby="f-h">
+      <div class="kicker">Why samar</div>
+      <h2 id="f-h">Share the moment, not everyone’s face.</h2>
+      <p class="sub">You took a photo with friends, strangers or kids in it. samar hides the faces without the photo ever leaving your phone.</p>
+      <div class="grid">
+        <div class="card"><div class="ico" aria-hidden="true">🔒</div><h3>Fully on-device</h3><p>Faces are found with Google’s ML Kit model, bundled inside the app. Photos are never uploaded.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">🧹</div><h3>Clean copies</h3><p>Saved photos have location and camera info (EXIF, GPS) removed by default.</p></div>
+        <div class="card"><div class="ico" aria-hidden="true">✋</div><h3>You stay in control</h3><p>Auto blurs every face it finds; Manual lets you pick. Resize any blur, keep faces visible, or draw over one the detector missed.</p></div>
+      </div>
+    </section>
+
+    <section id="effects" aria-labelledby="e-h">
+      <div class="kicker">Five looks</div>
+      <h2 id="e-h">Pick how it hides.</h2>
+      <p class="sub">Gaussian, Glass, Smear, Pixelate and Solid, with one intensity slider. Every effect except Solid fades softly into hair and skin, so it looks natural rather than cut out.</p>
+      <div class="card effects">
+        <img src="readme/effects.png" alt="The same portrait hidden with Gaussian, Glass, Smear, Pixelate and Solid" width="2240" height="535" loading="lazy">
+      </div>
+      <p class="note">Smear is a stylistic effect. Solid or Pixelate hide identity more reliably.</p>
+    </section>
+
+    <section id="how" aria-labelledby="h-h">
+      <div class="kicker">How it works</div>
+      <h2 id="h-h">Three taps from photo to safe to post.</h2>
+      <ol class="steps">
+        <li class="card"><h3>Choose a photo</h3><p>samar opens it in the editor and finds every face right on your phone.</p></li>
+        <li class="card"><h3>Check and pick a look</h3><p>Tap a face to keep it visible. Choose an effect, drag the slider, compare with the original.</p></li>
+        <li class="card"><h3>Save or share</h3><p>Check Before and After, zoom in on small faces, then save to your gallery or share.</p></li>
+      </ol>
+      <div class="card video">
+        <video controls preload="metadata" poster="assets/video-poster.jpg" playsinline aria-label="One-minute samar demo with narration">
+          <source src="video/samar-demo.mp4" type="video/mp4">
+          Your browser can’t play this video. <a href="video/samar-demo.mp4">Download the demo</a>.
+        </video>
+      </div>
+    </section>
+
+    <section id="privacy" aria-labelledby="p-h">
+      <div class="kicker">Privacy</div>
+      <h2 id="p-h">Nothing leaves your phone.</h2>
+      <div class="privacy">
+        <div class="card">
+          <h3>What samar doesn’t do</h3>
+          <ul>
+            <li>No accounts, no analytics, no ads.</li>
+            <li>No photo uploads, ever.</li>
+            <li>ML Kit’s logging route is removed, so it has nowhere to send anything.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>The one connection</h3>
+          <ul>
+            <li>Once a day samar asks GitHub’s public API for the latest release. It contains nothing about you or your photos.</li>
+            <li>Updates are verified (same app, newer, same signing key) before Android’s installer opens.</li>
+            <li>You can turn the check off in <i>About samar</i>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" aria-labelledby="i-h">
+      <div class="kicker">Install</div>
+      <h2 id="i-h">Get samar.</h2>
+      <div class="card install">
+        <div>
+          <p style="margin:0">samar isn’t on Google Play yet. Install it straight from GitHub:</p>
+          <ol>
+            <li>On your Android phone, open the <a href="https://github.com/hystericmoon/samar/releases/latest"><b>latest release</b></a> and download the <b>.apk</b>.</li>
+            <li>Open the file. If Android asks, allow your browser or Files app to <b>install unknown apps</b>.</li>
+            <li>Tap <b>Install</b>. If Play Protect doesn’t recognise it, choose <b>Install anyway</b>.</li>
+          </ol>
+          <p class="fine">Needs Android 8.0 (Oreo) or newer. Each release lists the APK’s SHA-256 so you can verify the download.</p>
+          <p style="margin:22px 0 0"><a class="btn primary" href="https://github.com/hystericmoon/samar/releases/latest">Download latest release</a></p>
+        </div>
+        <div class="side">
+          <img src="assets/icon.svg" alt="samar app icon" width="96" height="96">
+          <p>Kotlin + Jetpack Compose.<br>Apache 2.0 licensed.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 Hosni Rachmani · <a href="https://github.com/hystericmoon/samar/blob/main/LICENSE">Apache License 2.0</a></span>
+    <span>
+      <a href="https://github.com/hystericmoon/samar">Source on GitHub</a> ·
+      <a href="https://github.com/hystericmoon/samar/releases">Releases</a> ·
+      <a href="assets/fonts/ofl_bricolage_grotesque.txt">Font licences</a>
+    </span>
+  </footer>
+</div>
+</body>
+</html>
