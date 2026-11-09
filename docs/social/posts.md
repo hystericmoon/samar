@@ -22,7 +22,8 @@ Try it, and tell me what you'd change: https://hystericmoon.github.io/samar/
 
 #Android #Privacy #ProductDesign #OpenSource #JetpackCompose
 
-(Attach `cover.png`. Put the link in the first comment too if you want better reach.)
+(Attach either `docs/video/samar-demo.mp4` (native upload, 1080x1920, 59 s) or `cover.png`.
+With the video, many people prefer the link in the first comment instead of the post body. Videos autoplay muted: the on-screen step titles carry the message without sound.)
 
 ## X / Threads / Bluesky (short)
 

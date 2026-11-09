@@ -82,6 +82,6 @@ every user and cannot be undone.
   `main` `/docs` at https://hystericmoon.github.io/samar/). Pages must be enabled by the owner
   (Settings, Pages, Deploy from a branch, `main`, `/docs`); cloud sessions can't change repo settings.
 - It deliberately avoids hard-coding the version; it links to `releases/latest`. Update it when
-  features users notice change. Phone screenshots are cropped from `docs/readme/screens.png`.
+  features users notice change. Phone screenshots (`docs/assets/screens/`, 692x1500 with rounded alpha corners) are native-resolution frames cut from `docs/video/samar-demo.mp4` (screen at x194..885, y300..1799 of the 1080x1920 frame). Redo them when the UI changes.
 - Launch post copy and cover images (rebuild with Playwright from the `.html` files) are in `docs/social/`.
 
