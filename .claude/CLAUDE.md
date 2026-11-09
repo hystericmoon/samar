@@ -75,3 +75,13 @@ every user and cannot be undone.
 - Maven Central rate-limits (HTTP 429): build with `--max-workers=1` and retry.
 - If a step is blocked by a permission check (e.g. merging a change to `.github/workflows`),
   tell the owner exactly what is blocked and the one action that unblocks it.
+
+## Website and social assets
+
+- The GitHub Pages site is `docs/index.html` (plain HTML/CSS, assets in `docs/assets`, served from
+  `main` `/docs` at https://hystericmoon.github.io/samar/). Pages must be enabled by the owner
+  (Settings, Pages, Deploy from a branch, `main`, `/docs`); cloud sessions can't change repo settings.
+- It deliberately avoids hard-coding the version; it links to `releases/latest`. Update it when
+  features users notice change. Phone screenshots are cropped from `docs/readme/screens.png`.
+- Launch post copy and cover images (rebuild with Playwright from the `.html` files) are in `docs/social/`.
+
